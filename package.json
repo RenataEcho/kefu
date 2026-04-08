@@ -1,0 +1,17 @@
+{
+  "name": "kefu",
+  "private": true,
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
+  "scripts": {
+    "dev:frontend": "pnpm --filter frontend run dev",
+    "build:frontend": "pnpm --filter frontend run build",
+    "lint": "pnpm -r run lint",
+    "type-check": "pnpm --filter frontend run type-check"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

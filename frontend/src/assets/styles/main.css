@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Dark Theme (default) ───────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --accent-muted: rgba(99, 102, 241, 0.15);
+  --accent-glow: rgba(99, 102, 241, 0.25);
+
+  --bg-base: #0f172a;
+  --bg-surface: #1e293b;
+  --bg-elevated: #273548;
+  --bg-glass: rgba(30, 41, 59, 0.8);
+
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-label: #64748b;
+  --text-inverse: #0f172a;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  --badge-red: #f87171;
+  --badge-orange: #fb923c;
+  --badge-green: #4ade80;
+  --badge-gray: #94a3b8;
+  --badge-blue: #38bdf8;
+
+  --status-success: #4ade80;
+  --status-warning: #fb923c;
+  --status-error: #f87171;
+  --status-info: #38bdf8;
+  --status-neutral: #94a3b8;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Glass card tokens */
+  --glass-card-bg: rgba(255, 255, 255, 0.06);
+  --glass-card-border: rgba(255, 255, 255, 0.11);
+  --glass-card-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+  --glass-card-gloss: linear-gradient(to bottom, rgba(255,255,255,0.15) 0px, rgba(255,255,255,0.05) 2px, transparent 2px);
+  --metric-top-line: linear-gradient(90deg, transparent, rgba(99,102,241,0.55), transparent);
+
+  /* Component tokens */
+  --panel-bg: rgba(255, 255, 255, 0.06);
+  --panel-border: rgba(255, 255, 255, 0.11);
+  --card-inner-bg: rgba(255, 255, 255, 0.09);
+  --bar-track-bg: rgba(255, 255, 255, 0.09);
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --avatar-bg: rgba(99, 102, 241, 0.25);
+  --avatar-color: #818cf8;
+
+  /* Layout chrome tokens */
+  --sidebar-bg: rgba(15, 23, 42, 0.85);
+  --header-bg: rgba(15, 23, 42, 0.92);
+}
+
+/* ─── Light Theme ────────────────────────────────────────── */
+[data-theme="light"] {
+  --accent: #4f46e5;
+  --accent-hover: #6366f1;
+  --accent-muted: rgba(79, 70, 229, 0.12);
+  --accent-glow: rgba(79, 70, 229, 0.18);
+
+  --bg-base: #eef2f9;
+  --bg-surface: #dde4f0;
+  --bg-elevated: #cdd7ec;
+  --bg-glass: rgba(255, 255, 255, 0.55);
+
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-label: #64748b;
+  --text-inverse: #ffffff;
+
+  --border-subtle: rgba(99, 120, 180, 0.08);
+  --border-default: rgba(99, 120, 180, 0.16);
+  --border-strong: rgba(99, 120, 180, 0.25);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  --badge-red: #dc2626;
+  --badge-orange: #ea580c;
+  --badge-green: #16a34a;
+  --badge-gray: #475569;
+  --badge-blue: #0284c7;
+
+  --status-success: #16a34a;
+  --status-warning: #ea580c;
+  --status-error: #dc2626;
+  --status-info: #0284c7;
+  --status-neutral: #475569;
+
+  /* Glass card tokens — light */
+  --glass-card-bg: rgba(255, 255, 255, 0.55);
+  --glass-card-border: rgba(255, 255, 255, 0.8);
+  --glass-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  --glass-card-gloss: linear-gradient(to bottom, rgba(255,255,255,0.8) 0px, rgba(255,255,255,0.4) 2px, transparent 2px);
+  --metric-top-line: linear-gradient(90deg, transparent, rgba(79,70,229,0.45), transparent);
+
+  /* Component tokens — light */
+  --panel-bg: rgba(255, 255, 255, 0.55);
+  --panel-border: rgba(255, 255, 255, 0.8);
+  --card-inner-bg: rgba(255, 255, 255, 0.7);
+  --bar-track-bg: rgba(79, 70, 229, 0.08);
+  --hover-bg: rgba(79, 70, 229, 0.04);
+  --avatar-bg: rgba(79, 70, 229, 0.18);
+  --avatar-color: #4f46e5;
+
+  /* Layout chrome tokens — light */
+  --sidebar-bg: rgba(230, 236, 248, 0.88);
+  --header-bg: rgba(238, 242, 249, 0.92);
+}
+
+/* ─── Base Reset ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+#app {
+  height: 100%;
+  min-height: 100vh;
+}
+
+/* ─── Glassmorphism Utilities ────────────────────────────── */
+@layer components {
+  .glass {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-glass);
+    transition: background 0.35s, border 0.35s;
+  }
+
+  .glass-surface {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border-subtle);
+    transition: background 0.35s, border 0.35s;
+  }
+
+  [data-theme="light"] .glass-surface {
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  /* ─── Badge Utilities ──────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+
+  .badge-red {
+    @apply badge;
+    color: var(--badge-red);
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.25);
+  }
+
+  .badge-orange {
+    @apply badge;
+    color: var(--badge-orange);
+    background: rgba(251, 146, 60, 0.1);
+    border: 1px solid rgba(251, 146, 60, 0.25);
+  }
+
+  .badge-green {
+    @apply badge;
+    color: var(--badge-green);
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.25);
+  }
+
+  .badge-gray {
+    @apply badge;
+    color: var(--badge-gray);
+    background: rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .badge-blue {
+    @apply badge;
+    color: var(--badge-blue);
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+  }
+
+  [data-theme="light"] .badge-red {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  [data-theme="light"] .badge-orange {
+    background: rgba(249, 115, 22, 0.1);
+    border-color: rgba(249, 115, 22, 0.3);
+  }
+
+  [data-theme="light"] .badge-green {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+  }
+
+  [data-theme="light"] .badge-gray {
+    background: rgba(100, 116, 139, 0.1);
+    border-color: rgba(100, 116, 139, 0.25);
+  }
+
+  [data-theme="light"] .badge-blue {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.3);
+  }
+
+  /* ─── Card ─────────────────────────────────────────────── */
+  .card {
+    @apply glass rounded-xl p-6;
+  }
+
+  .card-sm {
+    @apply glass rounded-lg p-4;
+  }
+
+  /* ─── Table Styles ─────────────────────────────────────── */
+  .table-row-sla-timeout {
+    background: rgba(248, 113, 113, 0.06) !important;
+  }
+
+  .table-row-sla-warning {
+    background: rgba(251, 146, 60, 0.06) !important;
+  }
+}
+
+/* ─── Scrollbar styling ──────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.35);
+  border-radius: 2px;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(79, 70, 229, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5);
+}
+
+/* ─── Drawer / Modal 底部操作栏（Supplement Step 12：遮挡滚动时下层字段阴影） */
+.drawer-footer-bar {
+  position: relative;
+  z-index: 20;
+  isolation: isolate;
+  background: var(--bg-surface) !important;
+  box-shadow: 0 -14px 36px -8px rgba(0, 0, 0, 0.45);
+  border-top: 1px solid var(--border-subtle);
+  margin: 12px -24px -24px;
+  padding: 16px 24px 20px;
+}
+
+[data-theme="light"] .drawer-footer-bar {
+  box-shadow: 0 -10px 24px -8px rgba(15, 23, 42, 0.12);
+}
+
+.drawer-footer-bar--modal {
+  margin: 12px -12px -12px;
+  padding: 14px 12px 16px;
+}
+
+/* 表格列标题 + InfoTooltip 对齐 */
+.table-col-title-with-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+}
+
+.table-col-title-text {
+  line-height: 1.2;
+}
+
+/* 筛选区：带标签列 */
+.filter-row--labeled {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 14px;
+}
+
+.filter-row--labeled .filter-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.filter-row--labeled .filter-actions {
+  margin-left: auto;
+  align-self: flex-end;
+  padding-bottom: 2px;
+}
+
+/* 列表页表格卡片：列宽由各列 width 约束；统一表头与单元格垂直对齐 */
+.table-card .n-data-table.n-data-table--small .n-data-table-th,
+.table-card .n-data-table.n-data-table--small .n-data-table-td {
+  vertical-align: middle;
+}
+
+/* ─── Transition Utilities ───────────────────────────────── */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(-8px);
+  opacity: 0;
+}

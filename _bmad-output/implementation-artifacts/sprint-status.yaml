@@ -1,0 +1,107 @@
+# Sprint Status Tracking
+# Project: kefu (客户服务中心)
+# Generated: 2026-04-03
+# 
+# STATUS DEFINITIONS:
+#   backlog        - Story exists in epics but no story file created yet
+#   ready-for-dev  - Story file created, ready for developer to implement
+#   in-progress    - Currently being implemented
+#   done           - Implementation complete and reviewed
+#   in-progress    - Epic has at least one story in progress
+
+project: kefu
+last_updated: "2026-04-08"  # Phase I Supplement Step 11–15：含 Step15 录入审核/客服录入码/SLA·通知审核类型（纯前端 Mock）
+
+# 补充需求 Phase I（frontend-development-sequence.md）：与 Epic Story 并行跟踪时可在此备注完成范围。
+
+development_status:
+  # Phase I 补充需求（见 frontend-development-sequence.md Supplement Step 15）
+  phase-i-supplement-15-supplement-md-9-11: review
+
+  # ─── Epic 1: 工程基础设施 ───────────────────────────────────────────
+  epic-1: in-progress
+  1-1-monorepo-scaffold: review
+  1-2-docker-compose: ready-for-dev
+  1-3-prisma-schema: ready-for-dev
+  1-4-nestjs-core-infrastructure: ready-for-dev
+  1-5-audit-log-interceptor: ready-for-dev
+  epic-1-retrospective: backlog
+
+  # ─── Epic 2: 认证安全 ────────────────────────────────────────────────
+  epic-2: in-progress
+  2-1-account-login-auth: review
+  2-2-rbac-permission-system: review
+  2-3-account-management: review
+  2-4-personal-settings: review
+  2-5-frontend-framework: review
+  2-6-custom-component-library: review
+  2-7-audit-log-viewer: review
+  epic-2-retrospective: backlog
+
+  # ─── Epic 3: 组织管理 ────────────────────────────────────────────────
+  epic-3: in-progress
+  3-1-sect-management: review
+  3-2-kefu-management: review
+  3-3-mentor-management: review
+  3-4-mentor-data-sync: review
+  3-5-org-hierarchy-drill-down: review
+  epic-3-retrospective: backlog
+
+  # ─── Epic 4: 用户主档管理 ────────────────────────────────────────────
+  epic-4: in-progress
+  4-1-user-profile-list: review
+  4-2-user-profile-create: review
+  4-3-user-profile-edit-delete: review
+  4-4-youbao-data-sync: review
+  4-5-payment-record-management: review
+  4-6-payment-excel-import: review
+  4-7-user-payment-data-export: review
+  4-8-user-profile-detail: review
+  epic-4-retrospective: backlog
+
+  # ─── Epic 5: 历史数据迁移 ────────────────────────────────────────────
+  epic-5: in-progress
+  5-1-historical-user-profile-import: review
+  5-2-historical-payment-record-import: review
+  5-3-batch-reverification-task: review
+  epic-5-retrospective: backlog
+
+  # ─── Epic 6: 微信消息通知 ────────────────────────────────────────────
+  epic-6: in-progress
+  6-1-wechat-api-integration: ready-for-dev
+  6-2-approval-rejection-notification: ready-for-dev
+  6-3-notification-failure-queue: review
+  epic-6-retrospective: backlog
+
+  # ─── Epic 7: 入群审核工作台 ──────────────────────────────────────────
+  epic-7: in-progress
+  7-1-feishu-api-integration: ready-for-dev
+  7-2-audit-workbench-list: review
+  7-3-approval-action: review
+  7-4-rejection-action: review
+  7-5-manual-import-fallback: review
+  7-6-duplicate-request-archive: review
+  7-7-sla-scan-task-alert: review
+  7-8-sla-alert-record-viewer: review
+  7-9-audit-data-export: review
+  7-10-audit-detail-drawer: review
+  epic-7-retrospective: backlog
+
+  # ─── Epic 8: 飞书好友管理 ────────────────────────────────────────────
+  epic-8: in-progress
+  8-1-feishu-friend-priority-list: review
+  8-2-kefu-mentor-oauth: review
+  8-3-send-friend-request: review
+  8-4-friend-request-status-tracking: review
+  8-5-manual-decision-zone: review
+  epic-8-retrospective: backlog
+
+  # ─── Epic 9: 数据看板 ────────────────────────────────────────────────
+  epic-9: in-progress
+  9-1-dashboard-aggregation-api: review
+  9-2-admin-global-dashboard: review
+  9-3-kefu-personal-dashboard: review
+  9-4-date-range-filter: review
+  9-5-conversion-funnel-visualization: done
+  9-6-dashboard-export-report: review
+  epic-9-retrospective: backlog
