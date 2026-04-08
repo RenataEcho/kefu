@@ -2,18 +2,46 @@ import MockAdapter from 'axios-mock-adapter'
 import type { AxiosInstance } from 'axios'
 import mockConfig from './index'
 
+/** 与 axios-mock-adapter 的 combineUrls 一致，得到用于匹配 mock 的完整路径 */
+function combinedRequestPath(config: { baseURL?: string; url?: string }): string {
+  const b = (config.baseURL || '').replace(/\/+$/, '')
+  const u = (config.url || '').replace(/^\/+/, '')
+  if (!b) return u ? `/${u}` : '/'
+  const joined = `${b}/${u}`.replace(/\/+/g, '/')
+  return joined.startsWith('/') ? joined : `/${joined}`
+}
+
+/**
+ * 生产构建 baseURL 为 /kefu/api/v1，adapter 会用 combineUrls 得到 /kefu/api/v1/...；
+ * mock 定义仍为 /api/v1/...，需同时匹配两种路径，否则请求会 passThrough 到静态站（POST → 405）。
+ */
+function mockUrlMatchPattern(mockUrl: string): RegExp {
+  const baseSeg = (import.meta.env.BASE_URL || '/').replace(/^\/+|\/+$/g, '')
+  const pathWithParams = mockUrl.replace(/:\w+/g, '[^/]+')
+  const prefix = baseSeg ? `(?:/${baseSeg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})?` : ''
+  return new RegExp(`^${prefix}${pathWithParams}$`)
+}
+
+function mockUrlParamsPattern(mockUrl: string): RegExp {
+  const baseSeg = (import.meta.env.BASE_URL || '/').replace(/^\/+|\/+$/g, '')
+  const pathWithGroups = mockUrl.replace(/:\w+/g, '([^/]+)')
+  const prefix = baseSeg ? `(?:/${baseSeg.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})?` : ''
+  return new RegExp(`^${prefix}${pathWithGroups}$`)
+}
+
 export function setupMockAdapter(axiosInstance: AxiosInstance) {
   // 设置延迟模拟真实网络，默认 500ms
   const mock = new MockAdapter(axiosInstance, { delayResponse: 500 })
 
   mockConfig.forEach((mockItem: any) => {
     const method = mockItem.method.toLowerCase()
-    const urlPattern = new RegExp('^' + mockItem.url.replace(/:\w+/g, '[^/]+') + '$')
+    const urlPattern = mockUrlMatchPattern(mockItem.url)
 
     const handler = (config: any): any => {
-      // 解析 url 参数
-      const paramsRegex = new RegExp('^' + mockItem.url.replace(/:\w+/g, '([^/]+)') + '$')
-      const match = config.url.match(paramsRegex)
+      const fullPath = combinedRequestPath(config)
+      // 解析 url 参数（必须用完整路径，config.url 常为相对片段）
+      const paramsRegex = mockUrlParamsPattern(mockItem.url)
+      const match = fullPath.match(paramsRegex)
       const urlParams: Record<string, string> = {}
       
       if (match) {
@@ -37,7 +65,7 @@ export function setupMockAdapter(axiosInstance: AxiosInstance) {
 
       // vite-plugin-mock 期望的 options 参数格式
       const mockOptions = {
-        url: config.url,
+        url: fullPath,
         body: parsedBody,
         query: config.params || {},
         headers: config.headers || {},
