@@ -86,9 +86,15 @@ export function fetchSlaAlerts(
   page: number,
   pageSize = 20,
   auditType?: 'group_audit' | 'entry_audit' | null,
+  assignedAgentName?: string | null,
+  rightLeopardCode?: string | null,
 ): Promise<PaginatedSlaAlerts> {
   const params: Record<string, string | number> = { page, pageSize }
   if (auditType) params.auditType = auditType
+  const ag = assignedAgentName?.trim()
+  if (ag) params.assignedAgentName = ag
+  const code = rightLeopardCode?.trim()
+  if (code) params.rightLeopardCode = code
   return get<PaginatedSlaAlerts>('/group-audits/sla-alerts', { params })
 }
 

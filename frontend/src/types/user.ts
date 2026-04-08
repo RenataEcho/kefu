@@ -51,6 +51,8 @@ export interface UserListQuery {
   page?: number
   pageSize?: number
   keyword?: string
+  /** 右豹编码精确匹配（大小写不敏感），与关键词分离 */
+  rightLeopardCode?: string | null
   agentId?: number | null
   mentorId?: number | null
   schoolId?: number | null

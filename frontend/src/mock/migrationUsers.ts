@@ -23,6 +23,48 @@ interface StoredBatch extends MigrationUserImportBatch {
 
 const batches: StoredBatch[] = []
 
+let migrationUserDemoSeeded = false
+
+function seedDemoMigrationUserBatches() {
+  if (migrationUserDemoSeeded) return
+  migrationUserDemoSeeded = true
+  const t0 = new Date(Date.now() - 86400000 * 18).toISOString()
+  const t1 = new Date(Date.now() - 86400000 * 9).toISOString()
+  batches.push(
+    {
+      id: 'mig-user-demo-1',
+      batchNo: 'MIG-000501',
+      importType: 'MIGRATION_USER',
+      fileName: '历史主档_华东区.xlsx',
+      createdAt: t0,
+      operatorName: '迁移专员-陈',
+      status: 'COMPLETED',
+      totalCount: 240,
+      successCount: 238,
+      failCount: 2,
+      pendingVerifyCount: 238,
+      failedRows: [
+        { rowNumber: 15, field: '右豹编码', rightLeopardCode: 'RB010001', reason: '编码已存在' },
+        { rowNumber: 66, field: '右豹编码', rightLeopardCode: '', reason: '右豹编码为空' },
+      ],
+    },
+    {
+      id: 'mig-user-demo-2',
+      batchNo: 'MIG-000502',
+      importType: 'MIGRATION_USER',
+      fileName: '历史主档_华南补录.xlsx',
+      createdAt: t1,
+      operatorName: '迁移专员-刘',
+      status: 'COMPLETED',
+      totalCount: 56,
+      successCount: 56,
+      failCount: 0,
+      pendingVerifyCount: 56,
+      failedRows: [],
+    },
+  )
+}
+
 function resolveAgent(name?: string): { id: number; name: string } {
   const t = name?.trim()
   if (!t) return { id: MOCK_AGENTS[0]!.id, name: MOCK_AGENTS[0]!.name }
@@ -156,31 +198,35 @@ export default [
   {
     url: '/api/v1/migration/users/import-batches',
     method: 'get',
-    response: () => ({
-      code: 0,
-      message: 'success',
-      data: {
-        items: batches.map((b) => ({
-          id: b.id,
-          batchNo: b.batchNo,
-          importType: b.importType,
-          fileName: b.fileName,
-          createdAt: b.createdAt,
-          operatorName: b.operatorName,
-          status: b.status,
-          totalCount: b.totalCount,
-          successCount: b.successCount,
-          failCount: b.failCount,
-          pendingVerifyCount: b.pendingVerifyCount,
-        })),
-        total: batches.length,
-      },
-    }),
+    response: () => {
+      seedDemoMigrationUserBatches()
+      return {
+        code: 0,
+        message: 'success',
+        data: {
+          items: batches.map((b) => ({
+            id: b.id,
+            batchNo: b.batchNo,
+            importType: b.importType,
+            fileName: b.fileName,
+            createdAt: b.createdAt,
+            operatorName: b.operatorName,
+            status: b.status,
+            totalCount: b.totalCount,
+            successCount: b.successCount,
+            failCount: b.failCount,
+            pendingVerifyCount: b.pendingVerifyCount,
+          })),
+          total: batches.length,
+        },
+      }
+    },
   },
   {
     url: '/api/v1/migration/users/import-batches/:batchId',
     method: 'get',
     response: (opt: { query: Record<string, string> }) => {
+      seedDemoMigrationUserBatches()
       const batchId = String(opt.query.batchId ?? '')
       const b = batches.find((x) => x.id === batchId)
       if (!b) return { code: 10002, message: '批次不存在', data: null }

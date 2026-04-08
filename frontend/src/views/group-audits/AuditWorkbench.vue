@@ -120,7 +120,7 @@
             v-model:value="codeFilter"
             size="small"
             clearable
-            placeholder="模糊匹配"
+            placeholder="精确匹配"
             class="filter-control"
             @keyup.enter="commitCodeFilter"
             @blur="commitCodeFilter"

@@ -35,6 +35,7 @@ export const usePaymentStore = defineStore('payment', () => {
     page: 1,
     pageSize: 20,
     keyword: '',
+    rightLeopardCode: '',
     startDate: null,
     endDate: null,
     userId: null,
@@ -94,6 +95,7 @@ export const usePaymentStore = defineStore('payment', () => {
   function resetQuery() {
     query.page = 1
     query.keyword = ''
+    query.rightLeopardCode = ''
     query.startDate = null
     query.endDate = null
     query.userId = null

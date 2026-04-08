@@ -267,7 +267,8 @@
                   :data="auditRows"
                   :bordered="false"
                   size="small"
-                  :scroll-x="980"
+                  :scroll-x="1020"
+                  table-layout="fixed"
                 />
                 <div v-if="auditNextCursor != null || auditRows.length > 0" class="load-more-wrap">
                   <n-button
@@ -410,29 +411,51 @@ const auditColumns: DataTableColumns<UserAuditLogRow> = [
   {
     title: tableColTitle('操作时间', 'user.detail.audit.time'),
     key: 'operatedAt',
-    width: 168,
+    width: 170,
     resizable: true,
-    minWidth: 140,
+    minWidth: 150,
     render(row) {
       return formatDate(row.operatedAt)
     },
   },
-  { title: tableColTitle('操作人', 'user.detail.audit.operator'), key: 'operatorName', width: 96, resizable: true, minWidth: 80 },
-  { title: tableColTitle('操作类型', 'user.detail.audit.type'), key: 'operationType', width: 72, resizable: true, minWidth: 64 },
-  { title: tableColTitle('变更字段', 'user.detail.audit.field'), key: 'fieldName', width: 120, resizable: true, minWidth: 100 },
+  {
+    title: tableColTitle('操作人', 'user.detail.audit.operator'),
+    key: 'operatorName',
+    width: 100,
+    resizable: true,
+    minWidth: 88,
+    ellipsis: { tooltip: true },
+  },
+  {
+    title: tableColTitle('操作类型', 'user.detail.audit.type'),
+    key: 'operationType',
+    width: 88,
+    resizable: true,
+    minWidth: 76,
+  },
+  {
+    title: tableColTitle('变更字段', 'user.detail.audit.field'),
+    key: 'fieldName',
+    width: 120,
+    resizable: true,
+    minWidth: 100,
+    ellipsis: { tooltip: true },
+  },
   {
     title: tableColTitle('变更前值', 'user.detail.audit.old'),
     key: 'beforeValue',
-    ellipsis: { tooltip: true },
-    minWidth: 140,
+    width: 220,
     resizable: true,
+    minWidth: 160,
+    ellipsis: { tooltip: true },
   },
   {
     title: tableColTitle('变更后值', 'user.detail.audit.new'),
     key: 'afterValue',
-    ellipsis: { tooltip: true },
-    minWidth: 140,
+    width: 220,
     resizable: true,
+    minWidth: 160,
+    ellipsis: { tooltip: true },
   },
 ]
 

@@ -280,8 +280,8 @@ function filterList(p: ListParams): EntryAuditItem[] {
     rows = rows.filter((r) => r.assignedAgentName.toLowerCase().includes(q))
   }
   if (p.rightLeopardCode) {
-    const q = p.rightLeopardCode.toLowerCase()
-    rows = rows.filter((r) => r.rightLeopardCode.toLowerCase().includes(q))
+    const q = p.rightLeopardCode.toUpperCase()
+    rows = rows.filter((r) => r.rightLeopardCode.toUpperCase() === q)
   }
   if (p.rightLeopardUserId) {
     const q = p.rightLeopardUserId.toLowerCase()
@@ -326,6 +326,7 @@ export function buildEntryAuditSlaAlertRows(): SlaAlertRow[] {
         entryAuditId: r.id,
         auditType: 'entry_audit',
         larkNickname: r.assignedAgentName,
+        assignedAgentName: r.assignedAgentName,
         rightLeopardCode: r.rightLeopardCode,
         alertType: 'first',
         sendStatus: r.id === 1 ? 'failed' : 'success',
@@ -343,6 +344,7 @@ export function buildEntryAuditSlaAlertRows(): SlaAlertRow[] {
         entryAuditId: r.id,
         auditType: 'entry_audit',
         larkNickname: r.assignedAgentName,
+        assignedAgentName: r.assignedAgentName,
         rightLeopardCode: r.rightLeopardCode,
         alertType: 'second',
         sendStatus: 'success',

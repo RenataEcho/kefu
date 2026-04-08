@@ -56,6 +56,7 @@ function ensureSeed() {
       if (u) u.paymentContact = name
     })
   }
+  seedDemoImportBatches()
 }
 
 function toApiItem(p: PayRow) {
@@ -115,6 +116,7 @@ function listMeta() {
 
 function filterPaymentsForExport(q: {
   keyword?: unknown
+  rightLeopardCode?: unknown
   startDate?: unknown
   endDate?: unknown
   userId?: unknown
@@ -124,12 +126,17 @@ function filterPaymentsForExport(q: {
   ensureSeed()
   let list = [...paymentRecords]
 
+  const codeExact = String(q.rightLeopardCode ?? '').trim()
+  if (codeExact) {
+    const c = codeExact.toUpperCase()
+    list = list.filter((p) => p.rightLeopardCode.toUpperCase() === c)
+  }
+
   const keyword = String(q.keyword ?? '').trim()
   if (keyword) {
     const kw = keyword.toLowerCase()
     list = list.filter(
       (p) =>
-        p.rightLeopardCode.toLowerCase().includes(kw) ||
         p.larkNickname.toLowerCase().includes(kw) ||
         (p.contactPerson?.toLowerCase().includes(kw) ?? false) ||
         p.createdByName.toLowerCase().includes(kw),
@@ -213,6 +220,121 @@ let nextImportBatchSeq = 1
 /** Story 5.2：历史付费迁移，与普通导入批次分表（无 500 条上限） */
 const migrationImportBatches: ImportBatchStored[] = []
 let nextMigrationImportBatchSeq = 1
+
+let importBatchesDemoSeeded = false
+
+function seedDemoImportBatches() {
+  if (importBatchesDemoSeeded) return
+  importBatchesDemoSeeded = true
+  const base = new Date(Date.now() - 86400000 * 5).toISOString()
+  const failRows: PaymentImportFailedRow[] = [
+    {
+      rowNumber: 4,
+      rightLeopardCode: 'RB999991',
+      amount: 1200,
+      paymentTime: '2025-12-01T10:00:00.000Z',
+      contactPerson: '张三',
+      reason: '右豹编码不存在，请先录入用户主档',
+    },
+    {
+      rowNumber: 7,
+      rightLeopardCode: 'RB010001',
+      amount: 99,
+      paymentTime: '2025-12-02T08:00:00.000Z',
+      contactPerson: '',
+      reason: '该用户已有付费记录，不可重复录入',
+    },
+  ]
+  importBatches.push(
+    {
+      id: 'ib-demo-001',
+      batchNo: 'IMP-000891',
+      createdAt: base,
+      operatorName: '李运营',
+      fileName: '付费导入_第一批.xlsx',
+      totalCount: 48,
+      localPassCount: 48,
+      apiPassCount: 48,
+      failCount: 0,
+      status: 'COMPLETED',
+      failedRows: [],
+    },
+    {
+      id: 'ib-demo-002',
+      batchNo: 'IMP-000892',
+      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+      operatorName: '王运营',
+      fileName: '付费导入_含重复.xlsx',
+      totalCount: 12,
+      localPassCount: 12,
+      apiPassCount: 10,
+      failCount: 2,
+      status: 'PARTIAL_FAILED',
+      failedRows: failRows,
+    },
+    {
+      id: 'ib-demo-003',
+      batchNo: 'IMP-000893',
+      createdAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+      operatorName: '赵运营',
+      fileName: '季度补缴.xlsx',
+      totalCount: 156,
+      localPassCount: 156,
+      apiPassCount: 156,
+      failCount: 0,
+      status: 'COMPLETED',
+      failedRows: [],
+    },
+  )
+  nextImportBatchSeq = Math.max(nextImportBatchSeq, 894)
+
+  migrationImportBatches.push(
+    {
+      id: 'mig-pay-demo-1',
+      batchNo: 'MIG-000701',
+      createdAt: new Date(Date.now() - 86400000 * 12).toISOString(),
+      operatorName: '迁移专员A',
+      fileName: '历史付费_2024Q4.xlsx',
+      totalCount: 320,
+      localPassCount: 320,
+      apiPassCount: 318,
+      failCount: 2,
+      status: 'PARTIAL_FAILED',
+      failedRows: [
+        {
+          rowNumber: 88,
+          rightLeopardCode: 'RB888888',
+          amount: 500,
+          paymentTime: '2024-11-15T00:00:00.000Z',
+          contactPerson: '',
+          reason: '用户主档不存在',
+        },
+        {
+          rowNumber: 102,
+          rightLeopardCode: 'RB010002',
+          amount: 200,
+          paymentTime: '2024-10-01T00:00:00.000Z',
+          contactPerson: '李四',
+          reason: '该用户已有付费记录',
+        },
+      ],
+    },
+    {
+      id: 'mig-pay-demo-2',
+      batchNo: 'MIG-000702',
+      createdAt: new Date(Date.now() - 86400000 * 6).toISOString(),
+      operatorName: '迁移专员B',
+      fileName: '历史付费_合并表.xlsx',
+      totalCount: 89,
+      localPassCount: 89,
+      apiPassCount: 89,
+      failCount: 0,
+      status: 'COMPLETED',
+      failedRows: [],
+    },
+  )
+  nextMigrationImportBatchSeq = Math.max(nextMigrationImportBatchSeq, 703)
+}
 
 type TryInsertResult =
   | { ok: true; row: PayRow }
@@ -575,6 +697,7 @@ export default [
         page = '1',
         pageSize = '20',
         keyword = '',
+        rightLeopardCode = '',
         startDate = '',
         endDate = '',
         userId: userIdQ = '',
@@ -584,11 +707,16 @@ export default [
 
       let list = [...paymentRecords]
 
+      const codeQ = String(rightLeopardCode ?? '').trim()
+      if (codeQ) {
+        const c = codeQ.toUpperCase()
+        list = list.filter((p) => p.rightLeopardCode.toUpperCase() === c)
+      }
+
       if (keyword) {
         const kw = keyword.toLowerCase()
         list = list.filter(
           (p) =>
-            p.rightLeopardCode.toLowerCase().includes(kw) ||
             p.larkNickname.toLowerCase().includes(kw) ||
             (p.contactPerson?.toLowerCase().includes(kw) ?? false) ||
             p.createdByName.toLowerCase().includes(kw),

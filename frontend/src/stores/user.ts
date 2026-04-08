@@ -20,6 +20,7 @@ export const useUserStore = defineStore('user', () => {
     page: 1,
     pageSize: 20,
     keyword: '',
+    rightLeopardCode: '',
     agentId: null,
     mentorId: null,
     schoolId: null,
@@ -87,6 +88,7 @@ export const useUserStore = defineStore('user', () => {
   function resetQuery() {
     query.page = 1
     query.keyword = ''
+    query.rightLeopardCode = ''
     query.agentId = null
     query.mentorId = null
     query.schoolId = null

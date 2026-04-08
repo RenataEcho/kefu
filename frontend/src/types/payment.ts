@@ -14,6 +14,8 @@ export interface PaymentListQuery {
   page?: number
   pageSize?: number
   keyword?: string
+  /** 右豹编码精确匹配（大小写不敏感） */
+  rightLeopardCode?: string | null
   startDate?: string | null
   endDate?: string | null
   userId?: number | null

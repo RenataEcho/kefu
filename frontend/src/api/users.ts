@@ -28,6 +28,8 @@ export function fetchUsers(query: UserListQuery): Promise<PaginatedUsers> {
     pageSize: query.pageSize ?? 20,
   }
   if (query.keyword) params.keyword = query.keyword
+  const rlc = String(query.rightLeopardCode ?? '').trim()
+  if (rlc) params.rightLeopardCode = rlc
   if (query.agentId != null) params.agentId = query.agentId
   if (query.mentorId != null) params.mentorId = query.mentorId
   if (query.schoolId != null) params.schoolId = query.schoolId

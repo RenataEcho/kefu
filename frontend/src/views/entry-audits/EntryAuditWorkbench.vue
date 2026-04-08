@@ -54,7 +54,7 @@
             v-model:value="codeInput"
             size="small"
             clearable
-            placeholder="模糊匹配"
+            placeholder="精确匹配"
             class="filter-control"
             @keyup.enter="commitFilters"
             @clear="commitFilters"

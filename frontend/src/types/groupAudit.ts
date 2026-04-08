@@ -100,6 +100,8 @@ export interface SlaAlertRow {
   auditType: SlaRelatedAuditType
   /** 入群：飞书昵称；录入：所属客服名（列表展示） */
   larkNickname: string
+  /** 与用户主档对齐的所属客服，供 SLA 筛选（入群场景由右豹编码反查主档 Mock） */
+  assignedAgentName?: string
   rightLeopardCode: string
   alertType: 'first' | 'second'
   sendStatus: 'success' | 'failed'
@@ -139,7 +141,7 @@ export interface GroupAuditQuery {
   reviewerName?: string | null
   /** 待审核队列内：全部 / 仅超时 / 仅未超时 */
   pendingSla?: PendingSlaFilter | null
-  /** 右豹编码（模糊匹配） */
+  /** 右豹编码（精确匹配，大小写不敏感） */
   rightLeopardCode?: string | null
 }
 

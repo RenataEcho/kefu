@@ -10,7 +10,10 @@ export interface FieldHelpEntry {
 const CATALOG: Record<string, FieldHelpEntry> = {
   // ─── 用户主档 · 筛选 ─────────────────────────────────────
   'user.filter.keyword': {
-    hint: '支持按右豹编码、飞书昵称模糊搜索；回车或点「查询」生效。',
+    hint: '按飞书昵称、手机号、所属客服/导师名称等模糊搜索；右豹编码请使用单独条件精确查询。',
+  },
+  'user.filter.rightLeopardCode': {
+    hint: '与用户主档右豹编码完全一致匹配（大小写不敏感）；不包含在关键词模糊搜索中。',
   },
   'user.filter.isPaid': {
     hint: '付费学员：已产生付费记录的用户；普通用户：未付费或未标记为学员。',
@@ -91,7 +94,10 @@ const CATALOG: Record<string, FieldHelpEntry> = {
   },
   // ─── 付费记录 · 筛选 ─────────────────────────────────────
   'payment.filter.keyword': {
-    hint: '按右豹编码、飞书昵称、对接人、录入人等关键词筛选。',
+    hint: '按飞书昵称、付费对接人、录入人等模糊筛选；右豹编码请使用单独条件精确查询。',
+  },
+  'payment.filter.rightLeopardCode': {
+    hint: '与主档右豹编码完全一致匹配（大小写不敏感）。',
   },
   'payment.filter.dateRange': {
     hint: '按付费发生日期区间过滤；与列表导出口径一致。',
@@ -614,6 +620,12 @@ const CATALOG: Record<string, FieldHelpEntry> = {
   'sla.filter.auditType': {
     hint: '按入群审核 / 录入审核过滤 SLA 预警历史。',
   },
+  'sla.filter.assignedAgentName': {
+    hint: '按用户主档所属客服名称子串匹配（录入审核为记录上的所属客服；入群审核由右豹编码反查主档）。',
+  },
+  'sla.filter.rightLeopardCode': {
+    hint: '右豹编码精确匹配（大小写不敏感）。',
+  },
   'sla.col.alertAt': {
     title: '预警时间',
     hint: '系统生成或发送该 SLA 预警的时间。',
@@ -647,7 +659,7 @@ const CATALOG: Record<string, FieldHelpEntry> = {
     hint: '通知是否已成功投递渠道。',
   },
   'notify.filter.rightLeopardCode': {
-    hint: '按右豹编码模糊匹配通知关联用户。',
+    hint: '按右豹编码精确匹配通知关联用户（大小写不敏感）。',
   },
   'notify.filter.scene': {
     hint: '按业务场景过滤，如审核结果、SLA 提醒等。',

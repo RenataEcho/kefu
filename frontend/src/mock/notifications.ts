@@ -61,7 +61,7 @@ export default [
       const page = Math.max(1, parseInt(opt.query.page || '1', 10))
       const pageSize = Math.max(1, Math.min(100, parseInt(opt.query.pageSize || '20', 10)))
       const statusFilter = opt.query.status as NotificationStatus | 'all' | undefined
-      const codeQ = (opt.query.rightLeopardCode || '').trim().toLowerCase()
+      const codeQ = (opt.query.rightLeopardCode || '').trim()
       const scenarioQ = opt.query.scenario as NotificationScenario | 'all' | undefined
       const channelQ = opt.query.channel as NotificationChannel | 'all' | undefined
       const auditTypeQ = opt.query.auditType as NotificationAuditType | 'all' | undefined
@@ -71,7 +71,8 @@ export default [
         rows = rows.filter((r) => r.status === statusFilter)
       }
       if (codeQ) {
-        rows = rows.filter((r) => r.rightLeopardCode.toLowerCase().includes(codeQ))
+        const c = codeQ.toUpperCase()
+        rows = rows.filter((r) => r.rightLeopardCode.toUpperCase() === c)
       }
       if (scenarioQ && scenarioQ !== 'all') {
         rows = rows.filter((r) => r.scenario === scenarioQ)

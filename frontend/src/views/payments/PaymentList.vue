@@ -203,9 +203,9 @@
           <FilterFieldLabel label="关键词" catalog-key="payment.filter.keyword" />
           <n-input
             v-model:value="paymentStore.query.keyword"
-            placeholder="右豹编码 / 飞书昵称 / 对接人 / 录入人"
+            placeholder="飞书昵称 / 对接人 / 录入人"
             clearable
-            style="width: 260px"
+            style="width: 240px"
             @keyup.enter="handleSearch"
             @clear="handleSearch"
           >
@@ -213,6 +213,18 @@
               <n-icon :component="SearchOutline" />
             </template>
           </n-input>
+        </div>
+        <div class="filter-cell">
+          <FilterFieldLabel label="右豹编码" catalog-key="payment.filter.rightLeopardCode" />
+          <n-input
+            v-model:value="paymentStore.query.rightLeopardCode"
+            placeholder="精确匹配"
+            clearable
+            class="mono-filter"
+            style="width: 160px"
+            @keyup.enter="handleSearch"
+            @clear="handleSearch"
+          />
         </div>
         <div class="filter-cell">
           <FilterFieldLabel label="付费日期" catalog-key="payment.filter.dateRange" />
@@ -690,6 +702,7 @@ async function handleExportPayments() {
       start: () =>
         startPaymentsExport({
           keyword: paymentStore.query.keyword || undefined,
+          rightLeopardCode: String(paymentStore.query.rightLeopardCode ?? '').trim() || undefined,
           startDate: paymentStore.query.startDate,
           endDate: paymentStore.query.endDate,
           userId: paymentStore.query.userId,

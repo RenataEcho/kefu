@@ -67,7 +67,7 @@
           <FilterFieldLabel label="关键词" catalog-key="user.filter.keyword" />
           <n-input
             v-model:value="userStore.query.keyword"
-            placeholder="搜索右豹编码 / 飞书昵称"
+            placeholder="飞书昵称 / 手机 / 客服或导师名"
             clearable
             style="width: 240px"
             @keyup.enter="handleSearch"
@@ -77,6 +77,19 @@
               <n-icon :component="SearchOutline" />
             </template>
           </n-input>
+        </div>
+
+        <div class="filter-cell">
+          <FilterFieldLabel label="右豹编码" catalog-key="user.filter.rightLeopardCode" />
+          <n-input
+            v-model:value="userStore.query.rightLeopardCode"
+            placeholder="精确匹配"
+            clearable
+            class="mono-filter"
+            style="width: 160px"
+            @keyup.enter="handleSearch"
+            @clear="handleSearch"
+          />
         </div>
 
         <div class="filter-cell">
@@ -280,6 +293,7 @@ const schoolOptions = computed(() =>
 const hasActiveFilters = computed(
   () =>
     !!userStore.query.keyword ||
+    !!String(userStore.query.rightLeopardCode ?? '').trim() ||
     userStore.query.agentId != null ||
     userStore.query.schoolId != null ||
     userStore.query.codeVerifyStatus != null ||
@@ -547,6 +561,7 @@ async function handleExport() {
       start: () =>
         startUsersExport({
           keyword: userStore.query.keyword || undefined,
+          rightLeopardCode: userStore.query.rightLeopardCode?.trim() || undefined,
           agentId: userStore.query.agentId,
           mentorId: userStore.query.mentorId,
           schoolId: userStore.query.schoolId,

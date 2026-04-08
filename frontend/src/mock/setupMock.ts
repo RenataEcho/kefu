@@ -63,11 +63,11 @@ export function setupMockAdapter(axiosInstance: AxiosInstance) {
         }
       }
 
-      // vite-plugin-mock 期望的 options 参数格式
+      // vite-plugin-mock 会把路径参数放进 query；需合并 urlParams，否则 :id 等永远读不到
       const mockOptions = {
         url: fullPath,
         body: parsedBody,
-        query: config.params || {},
+        query: { ...(config.params || {}), ...urlParams },
         headers: config.headers || {},
       }
 

@@ -17,6 +17,7 @@ import {
   registerExportJobProcessing,
 } from './exportJobsStore'
 import { buildEntryAuditSlaAlertRows, countSlaOverdueEntryAudits } from './entryAudits'
+import { findMockUserByRightLeopardCode } from './users'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -395,6 +396,8 @@ function countSlaOverduePendingAudits(): number {
 function buildSlaAlertRows(): SlaAlertRow[] {
   const rows: SlaAlertRow[] = []
   ALL_RECORDS.forEach((r) => {
+    const u = findMockUserByRightLeopardCode(r.rightLeopardCode)
+    const assignedAgentName = u?.agent?.name ?? ''
     if (r.firstAlertSentAt) {
       rows.push({
         id: `sla-${r.id}-1`,
@@ -402,6 +405,7 @@ function buildSlaAlertRows(): SlaAlertRow[] {
         groupAuditId: r.id,
         auditType: 'group_audit',
         larkNickname: r.larkNickname,
+        assignedAgentName,
         rightLeopardCode: r.rightLeopardCode,
         alertType: 'first',
         sendStatus: 'success',
@@ -418,6 +422,7 @@ function buildSlaAlertRows(): SlaAlertRow[] {
         groupAuditId: r.id,
         auditType: 'group_audit',
         larkNickname: r.larkNickname,
+        assignedAgentName,
         rightLeopardCode: r.rightLeopardCode,
         alertType: 'second',
         sendStatus: r.id === 1 ? 'failed' : 'success',
@@ -548,8 +553,8 @@ function filterGroupAudits(params: ListFilterParams): GroupAuditItem[] {
   }
 
   if (rightLeopardCode) {
-    const q = rightLeopardCode.toLowerCase()
-    filtered = filtered.filter((r) => r.rightLeopardCode.toLowerCase().includes(q))
+    const q = rightLeopardCode.toUpperCase()
+    filtered = filtered.filter((r) => r.rightLeopardCode.toUpperCase() === q)
   }
 
   const inWorkqueue = !status || status === 'PENDING'
@@ -737,9 +742,18 @@ export default [
       const page = Math.max(1, parseInt(options.query?.page ?? '1', 10))
       const pageSize = Math.max(1, Math.min(100, parseInt(options.query?.pageSize ?? '20', 10)))
       const auditTypeQ = (options.query?.auditType ?? '').trim()
+      const agentQ = (options.query?.assignedAgentName ?? '').trim()
+      const codeQ = (options.query?.rightLeopardCode ?? '').trim()
       let all = [...buildSlaAlertRows(), ...buildEntryAuditSlaAlertRows()]
       if (auditTypeQ === 'group_audit' || auditTypeQ === 'entry_audit') {
         all = all.filter((r) => r.auditType === auditTypeQ)
+      }
+      if (agentQ) {
+        all = all.filter((r) => (r.assignedAgentName ?? '').includes(agentQ))
+      }
+      if (codeQ) {
+        const c = codeQ.toUpperCase()
+        all = all.filter((r) => r.rightLeopardCode.toUpperCase() === c)
       }
       all.sort((a, b) => new Date(b.alertAt).getTime() - new Date(a.alertAt).getTime())
       const total = all.length

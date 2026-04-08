@@ -15,7 +15,7 @@
             v-model:value="filters.rightLeopardCode"
             size="small"
             clearable
-            placeholder="模糊匹配"
+            placeholder="精确匹配"
             @keyup.enter="applyFilters"
             @clear="applyFilters"
           />

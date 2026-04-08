@@ -49,6 +49,7 @@ export interface EntryAuditQuery {
   status?: EntryAuditStatus | null
   /** 所属客服名称（模糊） */
   assignedAgentName?: string | null
+  /** 右豹编码精确匹配（大小写不敏感） */
   rightLeopardCode?: string | null
   rightLeopardUserId?: string | null
   /** 不传或 all 表示全部来源 */

@@ -8,15 +8,39 @@
     </div>
 
     <div class="filter-bar glass">
-      <div class="filter-row filter-row--labeled">
-        <div class="filter-cell">
+      <div class="filter-grid">
+        <div class="filter-field">
           <FilterFieldLabel label="审核类型" catalog-key="sla.filter.auditType" />
           <n-select
             v-model:value="auditTypeFilter"
             size="small"
             class="filter-select"
             :options="auditTypeOptions"
-            @update:value="onAuditTypeChange"
+            @update:value="onFilterChange"
+          />
+        </div>
+        <div class="filter-field">
+          <FilterFieldLabel label="所属客服" catalog-key="sla.filter.assignedAgentName" />
+          <n-input
+            v-model:value="assignedAgentFilter"
+            size="small"
+            clearable
+            placeholder="客服名称"
+            class="filter-input"
+            @keyup.enter="onFilterChange"
+            @clear="onFilterChange"
+          />
+        </div>
+        <div class="filter-field">
+          <FilterFieldLabel label="右豹编码" catalog-key="sla.filter.rightLeopardCode" />
+          <n-input
+            v-model:value="rightLeopardCodeFilter"
+            size="small"
+            clearable
+            placeholder="精确匹配"
+            class="filter-input filter-input--mono"
+            @keyup.enter="onFilterChange"
+            @clear="onFilterChange"
           />
         </div>
       </div>
@@ -29,6 +53,7 @@
         :loading="loading"
         :bordered="false"
         size="small"
+        :scroll-x="1180"
         :row-key="(row: SlaAlertRow) => row.id"
         class="sla-table"
       >
@@ -55,7 +80,7 @@
 <script setup lang="ts">
 import { h, onMounted, ref } from 'vue'
 import type { DataTableColumns } from 'naive-ui'
-import { NButton } from 'naive-ui'
+import { NButton, NInput } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { fetchSlaAlerts } from '@/api/groupAudits'
 import type { SlaAlertRow, SlaRelatedAuditType } from '@/types/groupAudit'
@@ -72,6 +97,8 @@ const page = ref(1)
 const pageSize = ref(20)
 
 const auditTypeFilter = ref<SlaRelatedAuditType | 'all'>('all')
+const assignedAgentFilter = ref('')
+const rightLeopardCodeFilter = ref('')
 
 const auditTypeOptions = [
   { label: '全部', value: 'all' as const },
@@ -197,7 +224,13 @@ async function load() {
   try {
     const at =
       auditTypeFilter.value === 'all' ? null : auditTypeFilter.value
-    const res = await fetchSlaAlerts(page.value, pageSize.value, at)
+    const res = await fetchSlaAlerts(
+      page.value,
+      pageSize.value,
+      at,
+      assignedAgentFilter.value.trim() || null,
+      rightLeopardCodeFilter.value.trim() || null,
+    )
     items.value = res.items
     total.value = res.total
   } finally {
@@ -211,7 +244,7 @@ function onPageSize(n: number) {
   void load()
 }
 
-function onAuditTypeChange() {
+function onFilterChange() {
   page.value = 1
   void load()
 }
@@ -258,23 +291,29 @@ onMounted(() => {
 .filter-bar {
   border-radius: var(--radius-lg);
   padding: 14px 20px;
-  max-width: 280px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px 20px;
+  align-items: end;
 }
 
 .filter-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 
-.filter-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.filter-select {
+.filter-select,
+.filter-input {
   width: 100%;
+}
+
+.filter-input--mono :deep(.n-input__input-el) {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .type-label {

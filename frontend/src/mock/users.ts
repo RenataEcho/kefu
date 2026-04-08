@@ -285,6 +285,12 @@ const ALL_USERS = generateUsers()
   if (b) {
     b.codeVerifyStatus = 'FAILED'
   }
+  const c = ALL_USERS.find((u) => u.id === 9)
+  if (c) {
+    c.codeVerifyStatus = 'INVALID'
+    c.rightLeopardCode = 'INV-MIG-009'
+    c.invalidRetained = false
+  }
 })()
 
 // ─── In-memory created users storage ─────────────────────────────────────────
@@ -303,13 +309,20 @@ export function insertCreatedMockUser(user: MockUser): void {
 
 function filterMergedUsersForExport(body: Record<string, unknown>): MockUser[] {
   let filtered = [...CREATED_USERS, ...ALL_USERS]
+  const codeExact = String(body.rightLeopardCode ?? '').trim()
+  if (codeExact) {
+    const c = codeExact.toUpperCase()
+    filtered = filtered.filter((u) => u.rightLeopardCode.toUpperCase() === c)
+  }
   const keyword = String(body.keyword ?? '').trim()
   if (keyword) {
     const kw = keyword.toLowerCase()
     filtered = filtered.filter(
       (u) =>
-        u.rightLeopardCode.toLowerCase().includes(kw) ||
-        u.larkNickname.toLowerCase().includes(kw),
+        u.larkNickname.toLowerCase().includes(kw) ||
+        u.larkPhone.toLowerCase().includes(kw) ||
+        u.agent?.name.toLowerCase().includes(kw) ||
+        u.mentor?.name.toLowerCase().includes(kw),
     )
   }
   if (body.agentId != null && body.agentId !== '') {
@@ -389,6 +402,7 @@ export default [
         page = '1',
         pageSize = '20',
         keyword = '',
+        rightLeopardCode = '',
         agentId,
         mentorId,
         schoolId,
@@ -399,12 +413,20 @@ export default [
       // Merge seed data with in-session created users (newest first)
       let filtered = [...CREATED_USERS, ...ALL_USERS]
 
+      const codeQ = String(rightLeopardCode ?? '').trim()
+      if (codeQ) {
+        const c = codeQ.toUpperCase()
+        filtered = filtered.filter((u) => u.rightLeopardCode.toUpperCase() === c)
+      }
+
       if (keyword) {
         const kw = keyword.toLowerCase()
         filtered = filtered.filter(
           (u) =>
-            u.rightLeopardCode.toLowerCase().includes(kw) ||
-            u.larkNickname.toLowerCase().includes(kw),
+            u.larkNickname.toLowerCase().includes(kw) ||
+            u.larkPhone.toLowerCase().includes(kw) ||
+            u.agent?.name.toLowerCase().includes(kw) ||
+            u.mentor?.name.toLowerCase().includes(kw),
         )
       }
       if (agentId) {

@@ -16,6 +16,8 @@ export function fetchPayments(query: PaymentListQuery): Promise<PaginatedPayment
     pageSize: query.pageSize ?? 20,
   }
   if (query.keyword) params.keyword = query.keyword
+  const rlc = String(query.rightLeopardCode ?? '').trim()
+  if (rlc) params.rightLeopardCode = rlc
   if (query.startDate) params.startDate = query.startDate
   if (query.endDate) params.endDate = query.endDate
   if (query.userId != null) params.userId = query.userId
