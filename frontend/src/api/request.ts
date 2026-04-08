@@ -3,14 +3,18 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import type { ApiResponse } from '@/types/api'
 import { notifyPermissionUpdated, notifySessionExpired } from '@/api/httpFeedback'
 import { useAuthStore } from '@/stores/auth'
+import { setupMockAdapter } from '@/mock/setupMock'
 
 const request: AxiosInstance = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.PROD ? '/kefu/api/v1' : '/api/v1',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 })
+
+// 挂载 mock adapter，拦截所有请求
+setupMockAdapter(request)
 
 request.interceptors.request.use(
   (config) => {

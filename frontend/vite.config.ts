@@ -3,12 +3,15 @@ import vue from '@vitejs/plugin-vue'
 import { viteMockServe } from 'vite-plugin-mock'
 import { resolve } from 'path'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // 配置 GitHub Pages 的 base 路径
+  base: command === 'build' ? '/kefu/' : '/',
   plugins: [
     vue(),
     viteMockServe({
       mockPath: 'src/mock',
-      enable: true,
+      // 我们现在使用前端拦截，其实可以禁用这里了，但保留开发环境也可以
+      enable: command === 'serve',
     }),
   ],
   resolve: {
@@ -20,4 +23,4 @@ export default defineConfig({
     port: 5173,
     open: false,
   },
-})
+}))
