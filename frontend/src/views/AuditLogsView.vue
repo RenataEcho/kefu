@@ -2,7 +2,10 @@
   <div class="audit-logs-page">
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">操作日志</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">操作日志</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">只读审计追溯，不可删除或修改（NFR10）</span>
       </div>
     </div>
@@ -89,6 +92,7 @@ import {
   tableLabel,
 } from '@/utils/auditLogLabels'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const message = useMessage()

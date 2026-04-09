@@ -8,7 +8,10 @@
           </template>
           返回列表
         </n-button>
-        <h2 class="page-title">门派详情</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">门派详情</h2>
+          <PageRuleHelpLink />
+        </div>
         <span v-if="detail" class="page-desc">{{ detail.name }}</span>
         <span v-else-if="!loadError" class="page-desc">加载中…</span>
       </div>
@@ -96,6 +99,7 @@ import type { SchoolListItem } from '@/types/school'
 import { fetchSchoolDetail, fetchSchoolMentors } from '@/api/schools'
 import { formatDate } from '@/utils/date'
 import { tableColTitle } from '@/utils/columnTitleHelp'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 
 const route = useRoute()
 const router = useRouter()

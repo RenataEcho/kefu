@@ -2,6 +2,7 @@ import type { MockMethod } from 'vite-plugin-mock'
 import type {
   NotificationAuditType,
   NotificationChannel,
+  NotificationRecipientType,
   NotificationRow,
   NotificationScenario,
   NotificationStatus,
@@ -20,6 +21,25 @@ const CHANNELS: NotificationChannel[] = ['WECHAT', 'LARK']
 
 const FAILURE_REASONS = ['未绑定 OpenID', '推送超时', '服务异常', null] as const
 
+const MOCK_USER_RECIPIENT_NAMES = [
+  '周海燕',
+  '赵敏',
+  '林晓',
+  '陈晨',
+  '刘洋',
+  '孙悦',
+  '马超',
+  '黄蕾',
+]
+
+const MOCK_AGENT_RECIPIENT_NAMES = [
+  '王小明',
+  '张闭环',
+  '李审核',
+  '系统管理员',
+  '付费对接-周婷',
+]
+
 function seedRows(): NotificationRow[] {
   const base = new Date('2026-03-01T08:00:00.000Z').getTime()
   const rows: NotificationRow[] = []
@@ -36,10 +56,18 @@ function seedRows(): NotificationRow[] {
       status === 'FAILED' ? FAILURE_REASONS[i % FAILURE_REASONS.length] : null
     const t = new Date(base + i * 3700_000 + (i % 7) * 86400000).toISOString()
     const auditType: NotificationAuditType = i % 3 === 0 ? 'entry_audit' : 'group_audit'
+    const recipientType: NotificationRecipientType =
+      scenario === 'SLA_ALERT_FIRST' || scenario === 'SLA_ALERT_SECOND' ? 'agent' : i % 4 === 0 ? 'agent' : 'user'
+    const recipientName =
+      recipientType === 'agent'
+        ? MOCK_AGENT_RECIPIENT_NAMES[i % MOCK_AGENT_RECIPIENT_NAMES.length]!
+        : MOCK_USER_RECIPIENT_NAMES[i % MOCK_USER_RECIPIENT_NAMES.length]!
     rows.push({
       id: `ntf-${1000 + i}`,
       userId: 200 + (i % 18),
       rightLeopardCode: `RB${String(200000 + i * 17).padStart(6, '0')}`,
+      recipientType,
+      recipientName,
       scenario,
       channel: CHANNELS[i % CHANNELS.length]!,
       status,
@@ -65,6 +93,7 @@ export default [
       const scenarioQ = opt.query.scenario as NotificationScenario | 'all' | undefined
       const channelQ = opt.query.channel as NotificationChannel | 'all' | undefined
       const auditTypeQ = opt.query.auditType as NotificationAuditType | 'all' | undefined
+      const recipientTypeQ = opt.query.recipientType as NotificationRecipientType | 'all' | undefined
 
       let rows = [...store]
       if (statusFilter === 'SENT' || statusFilter === 'FAILED' || statusFilter === 'PENDING') {
@@ -82,6 +111,9 @@ export default [
       }
       if (auditTypeQ && auditTypeQ !== 'all') {
         rows = rows.filter((r) => r.auditType === auditTypeQ)
+      }
+      if (recipientTypeQ && recipientTypeQ !== 'all') {
+        rows = rows.filter((r) => r.recipientType === recipientTypeQ)
       }
 
       const total = rows.length

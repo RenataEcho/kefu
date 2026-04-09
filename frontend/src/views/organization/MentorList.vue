@@ -10,7 +10,7 @@
             :data="projectRows"
             :bordered="false"
             size="small"
-            :scroll-x="980"
+            :scroll-x="1180"
           />
         </n-spin>
       </n-drawer-content>
@@ -48,7 +48,10 @@
 
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">导师管理</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">导师管理</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">维护导师与门派归属；第三方同步字段只读展示</span>
       </div>
       <n-button v-if="canManage" type="primary" @click="openCreate">
@@ -144,11 +147,12 @@ import { AddOutline, CreateOutline, SearchOutline, TrashOutline } from '@vicons/
 import type { MentorListItem, MentorProjectRow, MentorStatus } from '@/types/mentor'
 import { deleteMentor, fetchMentorProjects, fetchMentors, updateMentor } from '@/api/mentors'
 import { fetchSchools } from '@/api/schools'
-import { formatDate } from '@/utils/date'
+import { formatDate, formatPeriodRangeDot } from '@/utils/date'
 import { usePermission } from '@/composables/usePermission'
 import { OPERATION_PERMS } from '@/utils/permission'
 import MentorFormDrawer from './MentorFormDrawer.vue'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const message = useMessage()
@@ -199,6 +203,20 @@ const projectColumns = computed<DataTableColumns<MentorProjectRow>>(() => [
     ellipsis: { tooltip: true },
   },
   { title: tableColTitle('业务大类', 'stats.col.businessCategory'), key: 'businessCategory', width: 100, resizable: true, minWidth: 88 },
+  {
+    title: tableColTitle('分配周期', 'stats.col.allocationPeriod'),
+    key: 'allocationPeriod',
+    width: 200,
+    resizable: true,
+    minWidth: 168,
+    render(row) {
+      return h(
+        'span',
+        { style: { color: 'var(--text-secondary)', fontSize: '13px', whiteSpace: 'nowrap' } },
+        formatPeriodRangeDot(row.allocationPeriodStart, row.allocationPeriodEnd),
+      )
+    },
+  },
   { title: tableColTitle('题词数量', 'stats.col.inscriptionCount'), key: 'keywordCount', width: 88, resizable: true, minWidth: 72 },
   { title: tableColTitle('回填数量', 'stats.col.backfillCount'), key: 'backfillCount', width: 88, resizable: true, minWidth: 72 },
   { title: tableColTitle('订单数量', 'stats.col.orderCount'), key: 'orderCount', width: 88, resizable: true, minWidth: 72 },

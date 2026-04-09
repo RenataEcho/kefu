@@ -174,7 +174,10 @@
 
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">账号管理</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">账号管理</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">创建与维护后台登录账号，分配角色与审核员属性（prototype-spec §2.9.2）</span>
       </div>
       <n-button
@@ -274,6 +277,7 @@ import {
 } from '@/api/accounts'
 import { usePermission } from '@/composables/usePermission'
 import FormFieldHelpLabel from '@/components/common/FormFieldHelpLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const message = useMessage()

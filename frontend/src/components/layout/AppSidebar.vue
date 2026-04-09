@@ -51,6 +51,39 @@
       </template>
     </nav>
 
+    <!-- Admin-only -->
+    <template v-if="adminNavItems.length">
+      <div v-if="!appStore.sidebarCollapsed" class="nav-group-label">系统配置</div>
+      <template v-for="item in adminNavItems" :key="item.key">
+        <n-tooltip
+          v-if="appStore.sidebarCollapsed"
+          placement="right"
+          :show-arrow="false"
+          :delay="300"
+        >
+          <template #trigger>
+            <div
+              class="nav-item"
+              :class="{ active: isActive(item.path) }"
+              @click="navigate(item.path)"
+            >
+              <span class="nav-dot" />
+            </div>
+          </template>
+          {{ item.label }}
+        </n-tooltip>
+        <div
+          v-else
+          class="nav-item"
+          :class="{ active: isActive(item.path) }"
+          @click="navigate(item.path)"
+        >
+          <span class="nav-dot" />
+          <span class="nav-label">{{ item.label }}</span>
+        </div>
+      </template>
+    </template>
+
     <!-- Footer -->
     <div class="sidebar-divider" />
     <div class="sidebar-footer-nav">
@@ -154,6 +187,11 @@ const MENU_GROUPS: MenuGroup[] = [
 ]
 
 const FOOTER_ITEMS: MenuItem[] = []
+
+const adminNavItems = computed(() => {
+  if (authStore.user?.role !== 'admin') return []
+  return [{ key: 'page-rules', label: '规则配置说明', path: '/system/page-rules' }]
+})
 
 const visibleGroups = computed<MenuGroup[]>(() =>
   MENU_GROUPS

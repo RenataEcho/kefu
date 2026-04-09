@@ -1,5 +1,6 @@
 import type { MockMethod } from 'vite-plugin-mock'
 import type { UserProjectDetailRow } from '@/types/user'
+import { orgMentors, orgSchools, schoolNameById } from './organizationData'
 import { appendMockAuditLog } from './auditLogs'
 import {
   completeExportJob,
@@ -18,20 +19,20 @@ export const MOCK_AGENTS = [
   { id: 5, name: '陈建国' },
 ]
 
-export const MOCK_MENTORS = [
-  { id: 1, name: '赵天龙', schoolId: 1, schoolName: '紫霄门' },
-  { id: 2, name: '钱多多', schoolId: 1, schoolName: '紫霄门' },
-  { id: 3, name: '孙宇轩', schoolId: 2, schoolName: '青云派' },
-  { id: 4, name: '李华南', schoolId: 3, schoolName: '天剑宗' },
-  { id: 5, name: '周明智', schoolId: 2, schoolName: '青云派' },
-]
+/** 与「导师管理」内存表 orgMentors 同源，保证名下学员 mentorId 可命中 */
+export function mockMentorDirectory() {
+  return orgMentors.map((m) => ({
+    id: m.id,
+    name: m.name,
+    schoolId: m.schoolId,
+    schoolName: schoolNameById(m.schoolId),
+  }))
+}
 
-export const MOCK_SCHOOLS = [
-  { id: 1, name: '紫霄门' },
-  { id: 2, name: '青云派' },
-  { id: 3, name: '天剑宗' },
-  { id: 4, name: '玄武堂' },
-]
+/** 与「门派管理」orgSchools 同源 */
+export function mockSchoolDirectory() {
+  return orgSchools.map((s) => ({ id: s.id, name: s.name }))
+}
 
 // ─── User Records ─────────────────────────────────────────────────────────────
 
@@ -77,6 +78,25 @@ interface YoubaoRuntime {
 }
 
 const youbaoByUserId: Record<number, YoubaoRuntime> = {}
+
+/** 与 `mock/groupAudits.ts` buildRecords 中 order/backfill/收益推导规则一致 */
+export function userListActionStats10d(
+  u: MockUser,
+  y: YoubaoRuntime,
+): { keywordCount: number; orderCount: number; backfillCount: number; actionRevenueYuan: number } {
+  if (
+    u.codeVerifyStatus === 'PENDING_VERIFY' ||
+    u.codeVerifyStatus === 'INVALID' ||
+    u.codeVerifyStatus === 'FAILED'
+  ) {
+    return { keywordCount: 0, orderCount: 0, backfillCount: 0, actionRevenueYuan: 0 }
+  }
+  const keywordCount = y.keywordCount
+  const orderCount = y.orderCount
+  const backfillCount = Math.max(0, Math.round(keywordCount * 0.35))
+  const actionRevenueYuan = Math.round(keywordCount * 120 + orderCount * 45)
+  return { keywordCount, orderCount, backfillCount, actionRevenueYuan }
+}
 
 function ensureYoubao(u: MockUser): YoubaoRuntime {
   const down = isYoubaoApiSimulatedDown()
@@ -185,10 +205,12 @@ function userAuditSnapshot(u: MockUser): Record<string, unknown> {
 
 function toDetailPayload(u: MockUser) {
   const y = ensureYoubao(u)
+  const stats = userListActionStats10d(u, y)
   const { paymentPaidAt: _pp, paymentContact: _pc, ...rest } = u
   return {
     ...rest,
     projectRevenue: u.isPaid ? u.paymentAmount : y.projectRevenue,
+    ...stats,
     paidAt: u.isPaid ? u.paymentPaidAt : null,
     paymentContact: u.isPaid ? u.paymentContact : null,
     projectDetails: mockProjectDetailsForUser(u),
@@ -236,11 +258,12 @@ function generateUsers(): MockUser[] {
   const start = new Date('2025-06-01')
   const end = new Date('2026-04-01')
 
-  return Array.from({ length: 58 }, (_, i) => {
+  const mentorCount = Math.max(1, orgMentors.length)
+  return Array.from({ length: 60 }, (_, i) => {
     const idx = i + 1
     const agent = MOCK_AGENTS[(i % MOCK_AGENTS.length)]
-    const mentor = MOCK_MENTORS[(i % MOCK_MENTORS.length)]
-    const school = { id: mentor.schoolId, name: mentor.schoolName }
+    const mentor = orgMentors[i % mentorCount]!
+    const school = { id: mentor.schoolId, name: schoolNameById(mentor.schoolId) }
     const lnIdx = i % lastNames.length
     const fnIdx = i % firstNames.length
     const nickname = `${lastNames[lnIdx]}${firstNames[fnIdx]}`
@@ -353,6 +376,10 @@ function buildUserExportSheet(users: MockUser[]) {
     '飞书ID',
     '飞书手机号',
     '飞书昵称',
+    '近10天关键词',
+    '近10天回填',
+    '近10天订单',
+    '近10天动作收益(元)',
     '所属客服',
     '所属导师',
     '所属门派',
@@ -361,26 +388,34 @@ function buildUserExportSheet(users: MockUser[]) {
     '付费记录数',
     '录入时间',
   ]
-  const rows = users.map((u) => [
-    u.rightLeopardCode,
-    u.rightLeopardId,
-    u.larkId,
-    u.larkPhone,
-    u.larkNickname,
-    u.agent?.name ?? '',
-    u.mentor?.name ?? '',
-    u.school?.name ?? '',
-    u.codeVerifyStatus === 'VERIFIED'
-      ? '已验证'
-      : u.codeVerifyStatus === 'PENDING_VERIFY'
-        ? '待验证'
-        : u.codeVerifyStatus === 'INVALID'
-          ? '编码无效'
-          : '校验未响应',
-    u.isPaid ? '付费学员' : '普通用户',
-    u.paymentRecordsCount,
-    u.createdAt,
-  ])
+  const rows = users.map((u) => {
+    const y = ensureYoubao(u)
+    const s = userListActionStats10d(u, y)
+    return [
+      u.rightLeopardCode,
+      u.rightLeopardId,
+      u.larkId,
+      u.larkPhone,
+      u.larkNickname,
+      s.keywordCount,
+      s.backfillCount,
+      s.orderCount,
+      s.actionRevenueYuan,
+      u.agent?.name ?? '',
+      u.mentor?.name ?? '',
+      u.school?.name ?? '',
+      u.codeVerifyStatus === 'VERIFIED'
+        ? '已验证'
+        : u.codeVerifyStatus === 'PENDING_VERIFY'
+          ? '待验证'
+          : u.codeVerifyStatus === 'INVALID'
+            ? '编码无效'
+            : '校验未响应',
+      u.isPaid ? '付费学员' : '普通用户',
+      u.paymentRecordsCount,
+      u.createdAt,
+    ]
+  })
   return { headers, rows }
 }
 
@@ -453,9 +488,11 @@ export default [
         .slice((pageNum - 1) * pageSizeNum, pageNum * pageSizeNum)
         .map((u) => {
           const y = ensureYoubao(u)
+          const stats = userListActionStats10d(u, y)
           return {
             ...u,
             projectRevenue: u.isPaid ? u.paymentAmount : y.projectRevenue,
+            ...stats,
           }
         })
 
@@ -507,8 +544,8 @@ export default [
       message: 'success',
       data: {
         agents: MOCK_AGENTS,
-        mentors: MOCK_MENTORS,
-        schools: MOCK_SCHOOLS,
+        mentors: mockMentorDirectory(),
+        schools: mockSchoolDirectory(),
       },
     }),
   },
@@ -694,18 +731,17 @@ export default [
       }
       if (dto.mentorId !== undefined) {
         const mentorId = dto.mentorId ? Number(dto.mentorId) : 0
-        const mentor = MOCK_MENTORS.find((m) => m.id === mentorId)
+        const mentor = orgMentors.find((m) => m.id === mentorId)
         user.mentorId = mentorId
         user.mentor = mentor ? { id: mentor.id, name: mentor.name } : { id: 0, name: '' }
         if (mentor) {
-          const school = MOCK_SCHOOLS.find((s) => s.id === mentor.schoolId)
           user.schoolId = mentor.schoolId
-          user.school = school ? { id: school.id, name: school.name } : { id: 0, name: '' }
+          user.school = { id: mentor.schoolId, name: schoolNameById(mentor.schoolId) }
         }
       }
       if (dto.schoolId !== undefined && dto.mentorId === undefined) {
         const schoolId = dto.schoolId ? Number(dto.schoolId) : 0
-        const school = MOCK_SCHOOLS.find((s) => s.id === schoolId)
+        const school = orgSchools.find((s) => s.id === schoolId)
         user.schoolId = schoolId
         user.school = school ? { id: school.id, name: school.name } : { id: 0, name: '' }
       }
@@ -718,10 +754,16 @@ export default [
         afterData: userAuditSnapshot(user),
       })
 
+      const yAfter = ensureYoubao(user)
+      const statsAfter = userListActionStats10d(user, yAfter)
       return {
         code: 0,
         message: 'success',
-        data: { ...user, projectRevenue: user.isPaid ? user.paymentAmount : null },
+        data: {
+          ...user,
+          projectRevenue: user.isPaid ? user.paymentAmount : yAfter.projectRevenue,
+          ...statsAfter,
+        },
       }
     },
   },
@@ -812,10 +854,12 @@ export default [
       }
 
       const agent = MOCK_AGENTS.find((a) => a.id === dto.agentId) ?? null
-      const mentor = MOCK_MENTORS.find((m) => m.id === dto.mentorId) ?? null
+      const mentor = dto.mentorId ? orgMentors.find((m) => m.id === dto.mentorId) ?? null : null
       const school = mentor
-        ? MOCK_SCHOOLS.find((s) => s.id === mentor.schoolId) ?? null
-        : MOCK_SCHOOLS.find((s) => s.id === dto.schoolId) ?? null
+        ? { id: mentor.schoolId, name: schoolNameById(mentor.schoolId) }
+        : dto.schoolId
+          ? orgSchools.find((s) => s.id === dto.schoolId) ?? null
+          : null
 
       const newUser: MockUser = {
         id: nextId++,
@@ -842,10 +886,16 @@ export default [
 
       CREATED_USERS.unshift(newUser)
 
+      const yNew = ensureYoubao(newUser)
+      const statsNew = userListActionStats10d(newUser, yNew)
       return {
         code: 0,
         message: 'success',
-        data: { ...newUser, projectRevenue: null as number | null },
+        data: {
+          ...newUser,
+          projectRevenue: newUser.isPaid ? newUser.paymentAmount : yNew.projectRevenue,
+          ...statsNew,
+        },
       }
     },
   },

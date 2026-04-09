@@ -3,7 +3,10 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">角色管理</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">角色管理</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">配置角色组及其菜单权限、操作权限与敏感字段权限</span>
       </div>
       <n-button type="primary" @click="openCreateDrawer">
@@ -214,6 +217,7 @@ import {
 } from '@/utils/rbacCatalog'
 import request from '@/api/request'
 import FormFieldHelpLabel from '@/components/common/FormFieldHelpLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const message = useMessage()

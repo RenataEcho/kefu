@@ -3,7 +3,10 @@
     <!-- ─── Page Header ────────────────────────────────────────── -->
     <div class="page-header">
       <div class="header-left">
-        <h1 class="page-title">{{ canViewGlobalDashboard ? '运营数据看板' : '我的建联看板' }}</h1>
+        <div class="page-title-row">
+          <h1 class="page-title">{{ canViewGlobalDashboard ? '运营数据看板' : '我的建联看板' }}</h1>
+          <PageRuleHelpLink />
+        </div>
         <p class="page-desc">实时数据 · 最后更新 {{ lastUpdatedLabel }}</p>
       </div>
       <div v-if="canViewGlobalDashboard" class="header-right">
@@ -67,20 +70,26 @@
       <div class="metrics-grid metrics-grid--personal">
         <MetricCard
           title="本月新增建联"
+          field-help-key="dashboard.metric.periodNewConnections"
           :value="dashboardStore.personalData.periodNewConnections"
         />
         <MetricCard
           title="历史累计建联"
+          field-help-key="dashboard.metric.totalHistoricalConnections"
           :value="dashboardStore.personalData.totalHistoricalConnections"
         />
         <MetricCard
           v-if="hasFieldPermission('paymentAmount')"
           title="本期付费转化"
+          field-help-key="dashboard.metric.periodPaymentConversions"
           :value="dashboardStore.personalData.periodPaymentConversions"
         />
       </div>
       <div class="glass-panel personal-trend-panel">
-        <div class="panel-title panel-title--tight">近30天每日建联趋势</div>
+        <div class="panel-title panel-title--tight dashboard-panel-title">
+          <span>近30天每日建联趋势</span>
+          <FieldHelpInline catalog-key="dashboard.panel.connectionTrend30d" />
+        </div>
         <AgentConnectionTrendChart :points="dashboardStore.personalData.trend30d" />
       </div>
       <p
@@ -100,22 +109,26 @@
       <div class="metrics-grid">
         <MetricCard
           title="付费用户"
+          field-help-key="dashboard.metric.paidUserCount"
           :value="dashboardStore.metrics.paidUserCount"
           :trend="{ value: dashboardStore.metrics.paidUserTrend, direction: 'up' }"
         />
         <MetricCard
           title="普通用户"
+          field-help-key="dashboard.metric.regularUserCount"
           :value="dashboardStore.metrics.regularUserCount"
           :trend="{ value: dashboardStore.metrics.regularUserTrend, direction: 'up' }"
         />
         <MetricCard
           title="本月建联"
+          field-help-key="dashboard.metric.monthlyConnections"
           :value="dashboardStore.metrics.monthlyConnections"
         >
           <div class="metric-sub">共 {{ dashboardStore.metrics.totalAgents }} 名客服</div>
         </MetricCard>
         <MetricCard
           title="SLA 达标率"
+          field-help-key="dashboard.metric.slaComplianceRate"
           :value="dashboardStore.metrics.slaComplianceRate + '%'"
         >
           <template #badge>
@@ -129,7 +142,10 @@
       <div class="row-three-col">
         <!-- Conversion Funnel -->
         <div class="glass-panel funnel-panel">
-          <div class="panel-title panel-title--dash-section">转化漏斗</div>
+          <div class="panel-title panel-title--dash-section dashboard-panel-title">
+            <span>转化漏斗</span>
+            <FieldHelpInline catalog-key="dashboard.panel.funnel" />
+          </div>
           <ConversionFunnel :data="dashboardStore.funnel" />
           <p
             v-if="dashboardStore.funnelCacheTtlSeconds != null && dashboardStore.funnel.length"
@@ -142,7 +158,10 @@
         <!-- Agent Leaderboard -->
         <div class="glass-panel">
           <div class="panel-header">
-            <div class="panel-title panel-title--dash-section">客服本期建联</div>
+            <div class="panel-title panel-title--dash-section dashboard-panel-title">
+              <span>客服本期建联</span>
+              <FieldHelpInline catalog-key="dashboard.panel.agentConnections" />
+            </div>
             <span class="panel-hint">均值 {{ dashboardStore.agentAverage }}</span>
           </div>
           <div class="agent-list agent-list--balanced">
@@ -176,7 +195,10 @@
         <!-- Sect Overview -->
         <div class="glass-panel">
           <div class="panel-header">
-            <div class="panel-title panel-title--dash-section">门派概览</div>
+            <div class="panel-title panel-title--dash-section dashboard-panel-title">
+              <span>门派概览</span>
+              <FieldHelpInline catalog-key="dashboard.panel.schoolOverview" />
+            </div>
             <button type="button" class="btn-ghost" @click="goSectManagement">查看更多</button>
           </div>
           <div class="sect-list sect-list--balanced">
@@ -204,7 +226,10 @@
         <!-- Mentor Overview（补充需求） -->
         <div class="glass-panel">
           <div class="panel-header">
-            <div class="panel-title panel-title--dash-section">导师概览</div>
+            <div class="panel-title panel-title--dash-section dashboard-panel-title">
+              <span>导师概览</span>
+              <FieldHelpInline catalog-key="dashboard.panel.mentorOverview" />
+            </div>
             <button type="button" class="btn-ghost" @click="goMentorManagement">查看更多</button>
           </div>
           <div class="sect-list sect-list--balanced">
@@ -339,6 +364,8 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NSkeleton, NResult, NButton, useMessage } from 'naive-ui'
 import MetricCard from '@/components/business/MetricCard.vue'
+import FieldHelpInline from '@/components/common/FieldHelpInline.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import ConversionFunnel from '@/components/business/ConversionFunnel.vue'
 import AgentConnectionTrendChart from '@/components/business/AgentConnectionTrendChart.vue'
 import DateRangeFilter from '@/components/common/DateRangeFilter.vue'
@@ -618,6 +645,13 @@ async function handleExportReport() {
 }
 
 .panel-header .panel-title { margin-bottom: 0; }
+
+.dashboard-panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 
 .panel-hint {
   font-size: 11px;

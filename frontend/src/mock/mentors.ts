@@ -197,12 +197,15 @@ export default [
       const total = users.length
       const slice = users.slice((page - 1) * pageSize, page * pageSize).map((u) => {
         const st = statsFromUserId(u.id)
+        const bindStart = new Date(u.createdAt)
+        const bindEnd = new Date(bindStart.getTime() + (60 + (u.id % 90)) * 86400000)
         return {
           id: u.id,
           rightLeopardCode: u.rightLeopardCode,
           larkNickname: u.larkNickname,
           isPaid: u.isPaid,
-          createdAt: u.createdAt,
+          bindingPeriodStart: bindStart.toISOString(),
+          bindingPeriodEnd: bindEnd.toISOString(),
           ...st,
         }
       })

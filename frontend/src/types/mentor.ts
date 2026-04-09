@@ -18,6 +18,9 @@ export type ProjectBusinessCategory =
 export interface MentorProjectRow {
   projectName: string
   businessCategory: ProjectBusinessCategory | string
+  /** 导师在该项目上的收益/动作统计所归属的分配周期（起止 ISO 日期） */
+  allocationPeriodStart: string
+  allocationPeriodEnd: string
   keywordCount: number
   backfillCount: number
   orderCount: number
@@ -77,7 +80,9 @@ export interface MentorStudentRow {
   rightLeopardCode: string
   larkNickname: string
   isPaid: boolean
-  createdAt: string
+  /** 学员与导师绑定关系的有效周期（起止 ISO 日期） */
+  bindingPeriodStart: string
+  bindingPeriodEnd: string
   keywordCount: number
   backfillCount: number
   orderCount: number

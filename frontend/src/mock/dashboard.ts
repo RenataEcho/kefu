@@ -3,7 +3,8 @@
  * Story 9.1 的 Redis 键、TTL=300s、五种 dateRange、写后失效等语义见 `src/types/dashboard.ts` 文件头注释。
  */
 import type { MockMethod } from 'vite-plugin-mock'
-import { MOCK_AGENTS, MOCK_MENTORS, MOCK_SCHOOLS } from './users'
+import { orgMentors, orgSchools, schoolNameById } from './organizationData'
+import { MOCK_AGENTS } from './users'
 
 const PRESET_FACTORS: Record<string, number> = {
   current_month: 1,
@@ -23,8 +24,8 @@ function factorForQuery(dateRange: string, startDate?: string, endDate?: string)
 }
 
 function buildSchoolOverview(f: number) {
-  return MOCK_SCHOOLS.map((school) => {
-    const mentorsInSchool = MOCK_MENTORS.filter((m) => m.schoolId === school.id)
+  return orgSchools.map((school) => {
+    const mentorsInSchool = orgMentors.filter((m) => m.schoolId === school.id)
     const base = mentorsInSchool.length * 24
     const studentCount = Math.max(8, Math.round(base * f))
     return {
@@ -39,7 +40,7 @@ function buildSchoolOverview(f: number) {
 
 function buildMentorOverview(f: number) {
   const hourOffsets = [0.5, 1.2, 2.5, 4.0, 6.3]
-  return MOCK_MENTORS.map((mentor, idx) => {
+  return orgMentors.map((mentor, idx) => {
     const studentCount = Math.max(10, Math.round((32 + idx * 5) * f))
     const periodNewStudents = Math.max(1, Math.round((4 + (idx % 4)) * f))
     const projectCount = Math.max(3, Math.round((8 + idx * 3) * f))
@@ -47,7 +48,7 @@ function buildMentorOverview(f: number) {
     return {
       id: mentor.id,
       name: mentor.name,
-      schoolName: mentor.schoolName,
+      schoolName: schoolNameById(mentor.schoolId),
       studentCount,
       projectCount,
       totalRevenue: Math.round(studentCount * (220 + idx * 12) * f * 100) / 100,

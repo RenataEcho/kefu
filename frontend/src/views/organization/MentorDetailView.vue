@@ -8,7 +8,10 @@
           </template>
           返回列表
         </n-button>
-        <h2 class="page-title">导师详情</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">导师详情</h2>
+          <PageRuleHelpLink />
+        </div>
         <span v-if="detail" class="page-desc">{{ detail.name }}</span>
         <span v-else-if="!loadError" class="page-desc">加载中…</span>
       </div>
@@ -92,6 +95,7 @@
             <section class="detail-section glass">
               <p class="tab-hint">只读列表；归属变更请在用户主档中维护。</p>
               <n-data-table
+                class="mentor-detail-student-table"
                 :columns="studentColumns"
                 :data="studentRows"
                 :loading="studentsLoading"
@@ -123,7 +127,7 @@
                   :data="projectRows"
                   :bordered="false"
                   size="small"
-                  :scroll-x="1020"
+                  :scroll-x="1220"
                 />
               </n-spin>
             </section>
@@ -152,10 +156,11 @@ import {
 import { ChevronBackOutline } from '@vicons/ionicons5'
 import type { MentorDetail, MentorProjectRow, MentorStudentRow } from '@/types/mentor'
 import { fetchMentorDetail, fetchMentorProjects, fetchMentorStudents, postMentorSync } from '@/api/mentors'
-import { formatDate } from '@/utils/date'
+import { formatDate, formatPeriodRangeDot } from '@/utils/date'
 import { usePermission } from '@/composables/usePermission'
 import { OPERATION_PERMS } from '@/utils/permission'
 import ApiStatusBar from '@/components/business/ApiStatusBar.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { useAppStore } from '@/stores/app'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
@@ -203,6 +208,20 @@ const projectColumns: DataTableColumns<MentorProjectRow> = [
     ellipsis: { tooltip: true },
   },
   { title: tableColTitle('业务大类', 'stats.col.businessCategory'), key: 'businessCategory', width: 100, resizable: true, minWidth: 88 },
+  {
+    title: tableColTitle('分配周期', 'stats.col.allocationPeriod'),
+    key: 'allocationPeriod',
+    width: 200,
+    resizable: true,
+    minWidth: 168,
+    render(row) {
+      return h(
+        'span',
+        { class: 'muted', style: 'font-size:13px;white-space:nowrap' },
+        formatPeriodRangeDot(row.allocationPeriodStart, row.allocationPeriodEnd),
+      )
+    },
+  },
   { title: tableColTitle('题词数量', 'stats.col.inscriptionCount'), key: 'keywordCount', width: 88, resizable: true, minWidth: 72 },
   { title: tableColTitle('回填数量', 'stats.col.backfillCount'), key: 'backfillCount', width: 88, resizable: true, minWidth: 72 },
   { title: tableColTitle('订单数量', 'stats.col.orderCount'), key: 'orderCount', width: 88, resizable: true, minWidth: 72 },
@@ -232,18 +251,26 @@ const studentColumns = computed<DataTableColumns<MentorStudentRow>>(() => [
   {
     title: tableColTitle('右豹编码', 'mentor.detail.student.code'),
     key: 'rightLeopardCode',
-    width: 140,
+    width: '10%',
     resizable: true,
-    minWidth: 120,
+    minWidth: 96,
+    ellipsis: { tooltip: true },
     render(row) {
       return h('span', { class: 'mono' }, row.rightLeopardCode)
     },
   },
-  { title: tableColTitle('飞书昵称', 'mentor.detail.student.larkNickname'), key: 'larkNickname', minWidth: 120, resizable: true },
+  {
+    title: tableColTitle('飞书昵称', 'mentor.detail.student.larkNickname'),
+    key: 'larkNickname',
+    width: '10%',
+    resizable: true,
+    minWidth: 96,
+    ellipsis: { tooltip: true },
+  },
   {
     title: tableColTitle('是否付费', 'mentor.detail.student.isPaid'),
     key: 'isPaid',
-    width: 96,
+    width: '10%',
     resizable: true,
     minWidth: 80,
     render(row) {
@@ -252,15 +279,33 @@ const studentColumns = computed<DataTableColumns<MentorStudentRow>>(() => [
         : h('span', { class: 'badge-gray' }, '未付费')
     },
   },
-  { title: tableColTitle('题词数量', 'stats.col.inscriptionCount'), key: 'keywordCount', width: 88, resizable: true, minWidth: 72 },
-  { title: tableColTitle('回填数量', 'stats.col.backfillCount'), key: 'backfillCount', width: 88, resizable: true, minWidth: 72 },
-  { title: tableColTitle('订单数量', 'stats.col.orderCount'), key: 'orderCount', width: 88, resizable: true, minWidth: 72 },
+  {
+    title: tableColTitle('题词数量', 'stats.col.inscriptionCount'),
+    key: 'keywordCount',
+    width: '10%',
+    resizable: true,
+    minWidth: 72,
+  },
+  {
+    title: tableColTitle('回填数量', 'stats.col.backfillCount'),
+    key: 'backfillCount',
+    width: '10%',
+    resizable: true,
+    minWidth: 72,
+  },
+  {
+    title: tableColTitle('订单数量', 'stats.col.orderCount'),
+    key: 'orderCount',
+    width: '10%',
+    resizable: true,
+    minWidth: 72,
+  },
   {
     title: tableColTitle('已结算收益', 'stats.col.settledRevenue'),
     key: 'settledRevenueYuan',
-    width: 112,
+    width: '10%',
     resizable: true,
-    minWidth: 96,
+    minWidth: 88,
     render(row) {
       return h('span', { style: { fontSize: '13px' } }, formatYuanPlain(row.settledRevenueYuan))
     },
@@ -268,27 +313,31 @@ const studentColumns = computed<DataTableColumns<MentorStudentRow>>(() => [
   {
     title: tableColTitle('待结算收益', 'stats.col.pendingRevenue'),
     key: 'pendingRevenueYuan',
-    width: 112,
+    width: '10%',
     resizable: true,
-    minWidth: 96,
+    minWidth: 88,
     render(row) {
       return h('span', { class: 'muted', style: 'font-size:13px' }, formatYuanPlain(row.pendingRevenueYuan))
     },
   },
   {
-    title: tableColTitle('录入时间', 'mentor.detail.student.createdAt'),
-    key: 'createdAt',
-    width: 168,
+    title: tableColTitle('绑定周期', 'mentor.detail.student.bindingPeriod'),
+    key: 'bindingPeriod',
+    width: '10%',
     resizable: true,
     minWidth: 140,
     render(row) {
-      return h('span', { class: 'muted', style: 'font-size:13px' }, formatDate(row.createdAt))
+      return h(
+        'span',
+        { class: 'muted', style: 'font-size:13px;white-space:nowrap' },
+        formatPeriodRangeDot(row.bindingPeriodStart, row.bindingPeriodEnd),
+      )
     },
   },
   {
     title: tableColTitle('操作', 'mentor.detail.student.actions'),
     key: 'op',
-    width: 88,
+    width: '10%',
     resizable: true,
     minWidth: 72,
     render(row) {
@@ -537,6 +586,17 @@ onUnmounted(() => {
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;
+}
+
+/* 名下学员表：表头与数据区同宽，列宽按百分比均分 */
+.mentor-detail-student-table :deep(.n-data-table-base-table) {
+  width: 100%;
+}
+
+.mentor-detail-student-table :deep(.n-data-table-base-table-body .n-data-table-table),
+.mentor-detail-student-table :deep(.n-data-table-base-table-header .n-data-table-table) {
+  table-layout: fixed;
+  width: 100%;
 }
 
 .rich-wrap {

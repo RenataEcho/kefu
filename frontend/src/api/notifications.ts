@@ -21,6 +21,9 @@ export function fetchNotifications(query: NotificationListQuery): Promise<Pagina
   if (query.auditType && query.auditType !== 'all') {
     params.auditType = query.auditType
   }
+  if (query.recipientType && query.recipientType !== 'all') {
+    params.recipientType = query.recipientType
+  }
   return get<PaginatedNotifications>('/notifications', { params })
 }
 

@@ -47,11 +47,21 @@ const base = new Date('2025-07-01T00:00:00.000Z').getTime()
 const schoolNames = ['华山派', '武当派', '峨眉派', '少林派', '丐帮', '明教']
 const schoolLeaders = ['岳不群', '张三丰', '灭绝师太', '玄慈', '史火龙', '张无忌']
 
+function allocationPeriod(seed: number): Pick<MentorProjectRow, 'allocationPeriodStart' | 'allocationPeriodEnd'> {
+  const start = new Date(base + seed * 86400000 * 11)
+  const end = new Date(start.getTime() + (45 + (seed % 40)) * 86400000)
+  return {
+    allocationPeriodStart: start.toISOString(),
+    allocationPeriodEnd: end.toISOString(),
+  }
+}
+
 function demoProjects(prefix: string): MentorProjectRow[] {
   return [
     {
       projectName: `${prefix}-星辰短剧`,
       businessCategory: '短剧',
+      ...allocationPeriod(1),
       keywordCount: 86,
       backfillCount: 32,
       orderCount: 24,
@@ -61,6 +71,7 @@ function demoProjects(prefix: string): MentorProjectRow[] {
     {
       projectName: `${prefix}-推文矩阵`,
       businessCategory: '推文',
+      ...allocationPeriod(2),
       keywordCount: 142,
       backfillCount: 58,
       orderCount: 41,
@@ -70,6 +81,7 @@ function demoProjects(prefix: string): MentorProjectRow[] {
     {
       projectName: `${prefix}-端原生联运`,
       businessCategory: '端原生',
+      ...allocationPeriod(3),
       keywordCount: 55,
       backfillCount: 19,
       orderCount: 12,

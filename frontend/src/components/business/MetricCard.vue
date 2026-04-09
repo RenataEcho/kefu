@@ -1,7 +1,14 @@
 <template>
   <div class="metric-card glass-card">
     <div class="metric-card__header">
-      <span class="metric-card__title">{{ title }}</span>
+      <span class="metric-card__title">
+        {{ title }}
+        <InfoTooltip
+          v-if="fieldHelp"
+          :title="fieldHelp.title ?? ''"
+          :hint="fieldHelp.hint"
+        />
+      </span>
       <slot name="badge" />
     </div>
 
@@ -27,16 +34,24 @@
 import { computed } from 'vue'
 import { NIcon } from 'naive-ui'
 import { TrendingUpOutline, TrendingDownOutline } from '@vicons/ionicons5'
+import InfoTooltip from '@/components/common/InfoTooltip.vue'
+import { getFieldHelp } from '@/utils/fieldHelpCatalog'
 
 const props = defineProps<{
   title: string
   value: number | string
   unit?: string
+  /** 与 fieldHelpCatalog 中的 key 对应，展示指标统计说明 */
+  fieldHelpKey?: string
   trend?: {
     value: number
     direction: 'up' | 'down'
   }
 }>()
+
+const fieldHelp = computed(() =>
+  props.fieldHelpKey ? getFieldHelp(props.fieldHelpKey) ?? null : null,
+)
 
 const formattedValue = computed(() => {
   if (typeof props.value === 'number') {
@@ -94,6 +109,9 @@ const trendClass = computed(() => ({
 }
 
 .metric-card__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.07em;

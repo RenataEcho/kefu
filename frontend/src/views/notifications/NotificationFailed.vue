@@ -2,7 +2,10 @@
   <div class="notification-page">
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">消息通知记录</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">消息通知记录</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">支持筛选与待推送/失败重推（Mock）</span>
       </div>
     </div>
@@ -56,6 +59,15 @@
             @update:value="applyFilters"
           />
         </div>
+        <div class="filter-field">
+          <FilterFieldLabel label="接收人类型" catalog-key="notify.filter.recipientType" />
+          <n-select
+            v-model:value="filters.recipientType"
+            size="small"
+            :options="recipientFilterOptions"
+            @update:value="applyFilters"
+          />
+        </div>
       </div>
     </div>
 
@@ -104,6 +116,7 @@ import { NButton, useMessage } from 'naive-ui'
 import type {
   NotificationAuditType,
   NotificationChannel,
+  NotificationRecipientType,
   NotificationRow,
   NotificationScenario,
   NotificationStatus,
@@ -116,6 +129,7 @@ import {
 import { formatDate } from '@/utils/date'
 import { channelLabel, scenarioLabel } from '@/utils/notification-scenario'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const message = useMessage()
@@ -135,6 +149,7 @@ const filters = reactive({
   channel: 'all' as NotificationChannel | 'all',
   status: 'all' as NotificationStatus | 'all',
   auditType: 'all' as NotificationAuditType | 'all',
+  recipientType: 'all' as NotificationRecipientType | 'all',
 })
 
 const statusOptions = [
@@ -164,6 +179,12 @@ const auditTypeFilterOptions = [
   { label: '录入审核', value: 'entry_audit' as const },
 ]
 
+const recipientFilterOptions = [
+  { label: '全部', value: 'all' as const },
+  { label: '用户', value: 'user' as const },
+  { label: '客服', value: 'agent' as const },
+]
+
 function notificationAuditTypeLabel(t: NotificationAuditType) {
   return t === 'group_audit' ? '入群审核' : '录入审核'
 }
@@ -172,6 +193,10 @@ function statusTag(status: NotificationStatus) {
   if (status === 'SENT') return h('span', { class: 'badge-green' }, '已推送')
   if (status === 'FAILED') return h('span', { class: 'badge-red' }, '推送失败')
   return h('span', { class: 'badge-gray' }, '待发送')
+}
+
+function recipientTypeLabel(t: NotificationRecipientType) {
+  return t === 'user' ? '用户' : '客服'
 }
 
 async function doPush(row: NotificationRow, mode: 'now' | 'retry') {
@@ -216,6 +241,28 @@ const columns = computed<DataTableColumns<NotificationRow>>(() => [
     ellipsis: { tooltip: true },
     render(row) {
       return h('span', { style: { color: 'var(--text-primary)', fontWeight: 500 } }, row.rightLeopardCode)
+    },
+  },
+  {
+    title: tableColTitle('接收人', 'notify.col.recipient'),
+    key: 'recipient',
+    width: 148,
+    resizable: true,
+    minWidth: 120,
+    ellipsis: { tooltip: true },
+    render(row) {
+      return h('div', { class: 'recipient-cell' }, [
+        h(
+          'span',
+          { class: 'recipient-type-pill' },
+          recipientTypeLabel(row.recipientType),
+        ),
+        h(
+          'span',
+          { class: 'recipient-name-text' },
+          row.recipientName || '—',
+        ),
+      ])
     },
   },
   {
@@ -336,6 +383,7 @@ function listParams() {
     scenario: filters.scenario,
     channel: filters.channel,
     auditType: filters.auditType,
+    recipientType: filters.recipientType,
   }
 }
 
@@ -463,5 +511,27 @@ onMounted(() => load())
 .muted {
   color: var(--text-muted);
   font-size: 13px;
+}
+
+:deep(.recipient-cell) {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+:deep(.recipient-type-pill) {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+:deep(.recipient-name-text) {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.35;
 }
 </style>

@@ -2,7 +2,10 @@
   <div class="migration-hub">
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">数据迁移</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">数据迁移</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">历史用户主档与付费入库、补校验与迁移验证报告（纯前端 Mock）</span>
       </div>
     </div>
@@ -47,6 +50,7 @@ import { usePermission } from '@/composables/usePermission'
 import UserMigrationImportTab from '@/views/users/UserMigrationImportTab.vue'
 import MigrationPaymentImportTab from './MigrationPaymentImportTab.vue'
 import MigrationReverifyTab from './MigrationReverifyTab.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 
 const { hasOperationPermission } = usePermission()
 

@@ -1,8 +1,13 @@
 <template>
   <div class="profile-settings">
     <div class="page-header">
-      <h1 class="page-title">个人设置</h1>
-      <p class="page-desc">修改账号显示名与登录密码（prototype-spec §2.10）</p>
+      <div class="header-left">
+        <div class="page-title-row">
+          <h1 class="page-title">个人设置</h1>
+          <PageRuleHelpLink />
+        </div>
+        <p class="page-desc">修改账号显示名与登录密码（prototype-spec §2.10）</p>
+      </div>
     </div>
 
     <n-spin :show="profileLoading">
@@ -123,6 +128,7 @@ import { useAuthStore } from '@/stores/auth'
 import { fetchMe, patchMe, changeMyPassword } from '@/api/me'
 import type { MeProfile } from '@/api/me'
 import FormFieldHelpLabel from '@/components/common/FormFieldHelpLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 
 const message = useMessage()
 const authStore = useAuthStore()
@@ -273,6 +279,12 @@ async function savePassword() {
 
 .page-header {
   margin-bottom: 4px;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .page-title {

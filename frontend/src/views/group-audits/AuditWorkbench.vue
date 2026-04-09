@@ -15,7 +15,10 @@
     <!-- ─── Page Header ───────────────────────────────────────────────── -->
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">入群审核工作台</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">入群审核工作台</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">管理飞书入群申请，按 SLA 紧迫程度优先处理超时记录</span>
       </div>
       <div class="header-actions">
@@ -335,6 +338,7 @@ import { triggerLarkSyncNow, fetchLarkApiStatus } from '@/api/lark'
 import { formatDate } from '@/utils/date'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 import FormFieldHelpLabel from '@/components/common/FormFieldHelpLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import SlaStatusBadge from '@/components/business/SlaStatusBadge.vue'
 import ApiStatusBar from '@/components/business/ApiStatusBar.vue'
 

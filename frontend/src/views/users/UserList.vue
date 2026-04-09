@@ -32,7 +32,10 @@
     <!-- ─── Page Header ─────────────────────────────────────────── -->
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">用户主档</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">用户主档</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">管理所有已录入用户的基础信息与归属关系</span>
       </div>
       <div class="header-actions">
@@ -235,6 +238,7 @@ import UserEditDrawer from './UserEditDrawer.vue'
 import UserDeleteModals from './UserDeleteModals.vue'
 import UserMigrationImportTab from './UserMigrationImportTab.vue'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 import { startUsersExport } from '@/api/dataExport'
 import { runExportWithPolling } from '@/composables/useAsyncDataExport'
@@ -322,6 +326,21 @@ const columns = computed<DataTableColumns<UserListItem>>(() => {
       ellipsis: { tooltip: true },
       render(row) {
         return h('span', { style: { color: 'var(--text-primary)', fontWeight: '500' } }, row.larkNickname)
+      },
+    },
+    {
+      title: tableColTitle('近10天动作数', 'user.col.actionStats10d'),
+      key: 'actionStats10d',
+      width: 168,
+      resizable: true,
+      minWidth: 140,
+      render(row) {
+        return h('div', { class: 'action-stats-cell' }, [
+          h('div', {}, `关键词 ${row.keywordCount}`),
+          h('div', {}, `回填 ${row.backfillCount}`),
+          h('div', {}, `订单 ${row.orderCount}`),
+          h('div', {}, `收益 ¥${row.actionRevenueYuan.toLocaleString('zh-CN')}`),
+        ])
       },
     },
     {
@@ -760,5 +779,12 @@ onMounted(async () => {
   0%   { background: rgba(99, 102, 241, 0.28) !important; }
   50%  { background: rgba(99, 102, 241, 0.06) !important; }
   100% { background: rgba(99, 102, 241, 0.14) !important; }
+}
+
+/* 与入群审核列表「近10天动作数」单元格样式一致 */
+:deep(.action-stats-cell) {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-secondary);
 }
 </style>

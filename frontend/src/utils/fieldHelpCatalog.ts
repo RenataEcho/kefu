@@ -25,7 +25,7 @@ const CATALOG: Record<string, FieldHelpEntry> = {
     hint: '用户归属的门派组织，与导师体系联动。',
   },
   'user.filter.codeVerify': {
-    hint: '右豹编码与三方校验状态：已验证、待验证、编码无效、校验未响应等。',
+    hint: '右豹编码校验状态：已验证、待验证、编码无效、校验未响应等。',
   },
   // ─── 用户主档 · 表单（新增/编辑抽屉）──────────────────────
   'user.form.rightLeopardCode': {
@@ -61,6 +61,10 @@ const CATALOG: Record<string, FieldHelpEntry> = {
     title: '飞书昵称',
     hint: '飞书通讯录展示名；可与飞书用户 ID 在详情中对照查看。',
   },
+  'user.col.actionStats10d': {
+    title: '近10天动作数',
+    hint: '与入群审核列表同列：统计周期内的关键词、回填、订单与收益类动作次数，用于评估活跃度；编码未验证通过时展示为 0（Mock）。',
+  },
   'user.col.agent': {
     title: '所属客服',
     hint: '当前负责跟进的客服人员，可在编辑抽屉中调整归属。',
@@ -79,7 +83,7 @@ const CATALOG: Record<string, FieldHelpEntry> = {
   },
   'user.col.projectRevenue': {
     title: '项目收益',
-    hint: '用户在项目维度下的收益汇总（补充需求：原「付费金额」语义扩展为项目收益）。',
+    hint: '用户在项目维度下的收益汇总（补充需求：包含已结算和未结算收益）。',
   },
   'user.col.codeVerifyStatus': {
     title: '编码校验状态',
@@ -115,7 +119,7 @@ const CATALOG: Record<string, FieldHelpEntry> = {
   },
   'payment.col.contact': {
     title: '付费对接人',
-    hint: '补充需求：需从「付费客服」类型客服中选择，保证归属一致。',
+    hint: '「付费客服」类型客服中选择，保证归属一致。',
   },
   'payment.col.larkNickname': {
     title: '飞书昵称',
@@ -453,25 +457,29 @@ const CATALOG: Record<string, FieldHelpEntry> = {
     title: '业务大类',
     hint: '项目所属业务分类，用于统计切片。',
   },
+  'stats.col.allocationPeriod': {
+    title: '分配周期',
+    hint: '平台将导师与该项目下的收益/动作统计归属到该时间段内；展示为起止日期闭区间，格式 YYYY.MM.DD~YYYY.MM.DD。列表中的题词、回填、订单与收益数字均在该周期内汇总（Mock 按项目生成示例区间）。',
+  },
   'stats.col.inscriptionCount': {
     title: '题词数量',
-    hint: '周期内题词类动作次数（导师侧字段名或为用户侧「题词」口径，语义一致）。',
+    hint: '统计规则：所选周期（如导师项目表的「分配周期」或看板所选日期范围）内题词次数；仅品牌类项目有值，含审核中与已通过。导师详情与用户主档项目表口径一致。',
   },
   'stats.col.backfillCount': {
     title: '回填数量',
-    hint: '回填类动作次数。',
+    hint: '统计规则：同上周期内回填次数；仅品牌类项目有值，含审核中与已通过。',
   },
   'stats.col.orderCount': {
     title: '订单数量',
-    hint: '关联订单数或订单类动作汇总。',
+    hint: '统计规则：同上周期内关联订单数，含已结算与未结算订单。',
   },
   'stats.col.settledRevenue': {
     title: '已结算收益',
-    hint: '已完成结算、可计入已得收益的金额。',
+    hint: '统计规则：同上周期内已完成结算、可计入已得收益的金额汇总。',
   },
   'stats.col.pendingRevenue': {
     title: '待结算收益',
-    hint: '已发生尚未结算的金额。',
+    hint: '统计规则：同上周期内已发生但尚未完成结算的金额汇总。',
   },
   // ─── 导师详情 · 学员表 ───────────────────────────────────
   'mentor.detail.student.code': {
@@ -486,12 +494,61 @@ const CATALOG: Record<string, FieldHelpEntry> = {
     title: '是否付费',
     hint: '该学员付费状态标记。',
   },
-  'mentor.detail.student.createdAt': {
-    title: '录入时间',
-    hint: '学员进入主档的时间。',
+  'mentor.detail.student.bindingPeriod': {
+    title: '绑定周期',
+    hint: '学员与该导师绑定关系的有效区间（起止日期闭区间）；展示格式 YYYY.MM.DD~YYYY.MM.DD。与主档「录入时间」不同：此处表示业务归属时段，变更绑定会调整区间（Mock 由学员主档创建日推导示例起止）。',
   },
   'mentor.detail.student.actions': {
     hint: '跳转用户详情等操作。',
+  },
+  // ─── 数据看板 · 指标与区块（运营口径）──────────────────────
+  'dashboard.metric.paidUserCount': {
+    title: '付费用户',
+    hint: '统计规则：用户主档中标记为「付费学员」且在统计时点仍有效的用户数。趋势「较上期」为与上一段同等长度日期范围对比的环比变化（Mock）。',
+  },
+  'dashboard.metric.regularUserCount': {
+    title: '普通用户',
+    hint: '统计规则：主档中未标记为付费学员的用户数；与付费用户互斥汇总主档规模。趋势为环比（Mock）。',
+  },
+  'dashboard.metric.monthlyConnections': {
+    title: '本月建联',
+    hint: '统计规则：当前自然月内完成「建联」动作的用户人次（以主档归属客服为准）；副文案「共 N 名客服」为有权参与建联统计的客服账号数。与顶部日期筛选器联动时，按所选范围重算（Mock 与路由日期参数同步）。',
+  },
+  'dashboard.metric.slaComplianceRate': {
+    title: 'SLA 达标率',
+    hint: '统计规则：在统计周期内，审核/处理类工单在 SLA 截止前完成的比例；目标阈值由配置决定，展示为百分比。未达标单会进入 SLA 预警列表。',
+  },
+  'dashboard.metric.periodNewConnections': {
+    title: '本月新增建联',
+    hint: '统计规则：当前登录客服在本月（或所选周期）内新完成建联的用户数；仅个人看板可见。',
+  },
+  'dashboard.metric.totalHistoricalConnections': {
+    title: '历史累计建联',
+    hint: '统计规则：该客服历史上曾建联过的用户去重累计；不随当月筛选清零。',
+  },
+  'dashboard.metric.periodPaymentConversions': {
+    title: '本期付费转化',
+    hint: '统计规则：所选周期内由该客服跟进并标记为付费转化的用户数；受字段权限控制是否展示。',
+  },
+  'dashboard.panel.funnel': {
+    title: '转化漏斗',
+    hint: '统计规则：按运营配置的多步转化链路逐层汇总人数；每层人数为进入该步的累计。悬浮可见较上一步转化率及相对首步占比。数据可来自服务端缓存，刷新频率见面板底部提示。',
+  },
+  'dashboard.panel.agentConnections': {
+    title: '客服本期建联',
+    hint: '统计规则：与顶部日期范围一致，按客服维度统计期内新增建联用户数排名。均值线为全员算术平均；条形长度为相对展示用比例，非第二坐标轴绝对值。',
+  },
+  'dashboard.panel.schoolOverview': {
+    title: '门派概览',
+    hint: '统计规则：各门派下导师数、学员数、收益汇总为第三方/主档同步后的快照；点击卡片进入门派详情。列表为 Top 展示，完整数据在门派管理查看。',
+  },
+  'dashboard.panel.mentorOverview': {
+    title: '导师概览',
+    hint: '统计规则：导师维度展示其名下学员数、负责项目数及收益汇总（与导师详情页口径一致）；点击进导师详情。列表为 Top 展示。',
+  },
+  'dashboard.panel.connectionTrend30d': {
+    title: '近30天每日建联趋势',
+    hint: '统计规则：横轴为最近 30 个自然日，纵轴为当日该客服完成建联的用户数（按日去重或按次，以后台配置为准；Mock 为按日汇总）。',
   },
   // ─── 用户详情 · 操作日志 ─────────────────────────────────
   'user.detail.audit.time': {
@@ -533,7 +590,7 @@ const CATALOG: Record<string, FieldHelpEntry> = {
   },
   'audit.col.youbaoCode': {
     title: '右豹编码',
-    hint: '申请人右豹侧编码，用于与用户主档、通知等模块关联。',
+    hint: '申请人右豹侧编码，用于与用户主档、通知、收益等模块关联。',
   },
   'audit.col.applyTime': {
     title: '申请时间',
@@ -673,6 +730,9 @@ const CATALOG: Record<string, FieldHelpEntry> = {
   'notify.filter.auditType': {
     hint: '入群审核或录入审核关联的通知。',
   },
+  'notify.filter.recipientType': {
+    hint: '接收人为用户（如飞书昵称侧）或客服（展示客服档案名称）；SLA 类通知多为客服接收。',
+  },
   'notify.col.time': {
     title: '通知时间',
     hint: '该条通知记录生成或发送时间。',
@@ -680,6 +740,10 @@ const CATALOG: Record<string, FieldHelpEntry> = {
   'notify.col.youbaoCode': {
     title: '右豹编码',
     hint: '通知关联用户编码。',
+  },
+  'notify.col.recipient': {
+    title: '接收人',
+    hint: '该条推送的目标：用户或客服；为客服时展示客服名称，为用户时展示用户侧展示名（如飞书昵称）。',
   },
   'notify.col.auditType': {
     title: '审核类型',

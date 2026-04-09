@@ -35,7 +35,10 @@
 
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">客服管理</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">客服管理</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">维护客服档案与企微二维码，供用户主档归属选择</span>
       </div>
       <n-button type="primary" @click="openCreate">
@@ -144,6 +147,7 @@ import { formatDate } from '@/utils/date'
 import CsAgentFormDrawer from './CsAgentFormDrawer.vue'
 import EntryFormQrThumb from '@/components/cs-management/EntryFormQrThumb.vue'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const router = useRouter()

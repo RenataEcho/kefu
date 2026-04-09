@@ -32,7 +32,10 @@
 
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">导师类型</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">导师类型</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">维护导师分类，供导师档案与筛选使用</span>
       </div>
       <n-button type="primary" @click="openCreate">
@@ -76,6 +79,7 @@ import {
 } from '@/api/mentorTypes'
 import { formatDate } from '@/utils/date'
 import FormFieldHelpLabel from '@/components/common/FormFieldHelpLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const message = useMessage()

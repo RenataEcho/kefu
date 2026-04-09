@@ -1,11 +1,10 @@
 import type { MockMethod } from 'vite-plugin-mock'
+import { orgMentors, orgSchools, schoolNameById } from './organizationData'
 import {
   takeNextMockUserId,
   insertCreatedMockUser,
   findMockUserByRightLeopardCode,
   MOCK_AGENTS,
-  MOCK_MENTORS,
-  MOCK_SCHOOLS,
   type MockUser,
 } from './users'
 import type {
@@ -75,26 +74,26 @@ function resolveAgent(name?: string): { id: number; name: string } {
 function resolveMentor(name?: string): { id: number; name: string; schoolId: number; schoolName: string } {
   const t = name?.trim()
   if (!t) {
-    const m = MOCK_MENTORS[0]!
-    return { id: m.id, name: m.name, schoolId: m.schoolId, schoolName: m.schoolName }
+    const m = orgMentors[0]!
+    return { id: m.id, name: m.name, schoolId: m.schoolId, schoolName: schoolNameById(m.schoolId) }
   }
-  const m = MOCK_MENTORS.find((x) => x.name === t)
+  const m = orgMentors.find((x) => x.name === t)
   return m
-    ? { id: m.id, name: m.name, schoolId: m.schoolId, schoolName: m.schoolName }
+    ? { id: m.id, name: m.name, schoolId: m.schoolId, schoolName: schoolNameById(m.schoolId) }
     : { id: 0, name: '', schoolId: 0, schoolName: '' }
 }
 
 function resolveSchool(name?: string, mentorSchoolId?: number): { id: number; name: string } {
   const t = name?.trim()
   if (t) {
-    const s = MOCK_SCHOOLS.find((x) => x.name === t)
+    const s = orgSchools.find((x) => x.name === t)
     if (s) return { id: s.id, name: s.name }
   }
   if (mentorSchoolId) {
-    const s = MOCK_SCHOOLS.find((x) => x.id === mentorSchoolId)
+    const s = orgSchools.find((x) => x.id === mentorSchoolId)
     if (s) return { id: s.id, name: s.name }
   }
-  const s0 = MOCK_SCHOOLS[0]!
+  const s0 = orgSchools[0]!
   return { id: s0.id, name: s0.name }
 }
 

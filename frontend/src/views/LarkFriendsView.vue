@@ -2,7 +2,10 @@
   <div class="lark-friends-page">
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">飞书好友管理</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">飞书好友管理</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">按入群优先级处理好友申请，支持 OAuth 授权与人工决策（对齐原型 §2.5）</span>
       </div>
     </div>
@@ -172,6 +175,7 @@ import {
 } from '@/api/larkFriends'
 import { formatDate } from '@/utils/date'
 import { tableColTitle } from '@/utils/columnTitleHelp'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 
 type Row = LarkFriendPriorityRow
 

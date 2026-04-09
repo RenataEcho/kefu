@@ -22,7 +22,10 @@
           </template>
           返回列表
         </n-button>
-        <h2 class="page-title">用户详情</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">用户详情</h2>
+          <PageRuleHelpLink />
+        </div>
         <span v-if="detail" class="page-desc mono">{{ detail.rightLeopardCode }}</span>
         <span v-else-if="!loadError" class="page-desc">加载中…</span>
       </div>
@@ -316,6 +319,7 @@ import { formatDate, fromNow } from '@/utils/date'
 import UserEditDrawer from './UserEditDrawer.vue'
 import UserDeleteModals from './UserDeleteModals.vue'
 import InfoTooltip from '@/components/common/InfoTooltip.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const route = useRoute()

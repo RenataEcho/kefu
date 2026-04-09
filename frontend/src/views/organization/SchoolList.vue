@@ -34,7 +34,10 @@
 
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">门派管理</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">门派管理</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">维护组织顶层门派；门派侧不提供导师归属操作（需在导师管理中维护）</span>
       </div>
       <n-button v-if="canManage" type="primary" @click="openCreate">
@@ -121,6 +124,7 @@ import { usePermission } from '@/composables/usePermission'
 import { OPERATION_PERMS } from '@/utils/permission'
 import SchoolFormDrawer from './SchoolFormDrawer.vue'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const message = useMessage()

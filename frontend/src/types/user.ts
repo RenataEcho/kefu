@@ -44,6 +44,14 @@ export interface UserListItem {
   paymentAmount: number | null
   /** 补充需求：列表列「项目收益」（Mock 与付费金额同源） */
   projectRevenue: number | null
+  /**
+   * 近 10 天动作数（与入群审核列表同维度：关键词 / 回填 / 订单 / 收益）
+   * 编码未通过验证时为 0（Mock）
+   */
+  keywordCount: number
+  backfillCount: number
+  orderCount: number
+  actionRevenueYuan: number
   createdAt: string
 }
 

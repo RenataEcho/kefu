@@ -161,7 +161,10 @@
 
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">付费记录</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">付费记录</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">手动维护付费信息，与用户主档「是否付费」联动（Mock）</span>
       </div>
       <div class="header-actions">
@@ -337,6 +340,7 @@ import PaymentDetailDrawer from './PaymentDetailDrawer.vue'
 import PaymentImportRecordsTab from './PaymentImportRecordsTab.vue'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
 import FormFieldHelpLabel from '@/components/common/FormFieldHelpLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 import { fetchCsAgents } from '@/api/csAgents'
 import { startPaymentsExport } from '@/api/dataExport'

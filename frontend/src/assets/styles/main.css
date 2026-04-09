@@ -382,3 +382,15 @@ body {
   transform: translateX(-8px);
   opacity: 0;
 }
+
+/* ─── Page header: title +「查看规则说明」同行 ───────────────── */
+.page-title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+.page-title-row .page-title {
+  margin: 0;
+}

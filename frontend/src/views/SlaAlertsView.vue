@@ -2,7 +2,10 @@
   <div class="sla-alerts">
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">SLA 预警记录</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">SLA 预警记录</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">入群审核与录入审核 SLA 预警发送历史（Mock）</span>
       </div>
     </div>
@@ -86,6 +89,7 @@ import { fetchSlaAlerts } from '@/api/groupAudits'
 import type { SlaAlertRow, SlaRelatedAuditType } from '@/types/groupAudit'
 import { formatDate } from '@/utils/date'
 import FilterFieldLabel from '@/components/common/FilterFieldLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 
 const router = useRouter()

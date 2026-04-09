@@ -2,7 +2,10 @@
   <div class="audit-workbench entry-audit-workbench">
     <div class="page-header">
       <div class="header-left">
-        <h2 class="page-title">录入审核工作台</h2>
+        <div class="page-title-row">
+          <h2 class="page-title">录入审核工作台</h2>
+          <PageRuleHelpLink />
+        </div>
         <span class="page-desc">用户主档录入来源：后台导入与用户扫码；处理规则与入群审核对齐（Mock）</span>
       </div>
     </div>
@@ -191,6 +194,7 @@ import {
 import { formatDate } from '@/utils/date'
 import { tableColTitle } from '@/utils/columnTitleHelp'
 import FormFieldHelpLabel from '@/components/common/FormFieldHelpLabel.vue'
+import PageRuleHelpLink from '@/components/common/PageRuleHelpLink.vue'
 import SlaStatusBadge from '@/components/business/SlaStatusBadge.vue'
 
 dayjs.extend(utc)

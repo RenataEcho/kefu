@@ -190,6 +190,20 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/settings/ProfileSettings.vue'),
         meta: { title: '个人设置' },
       },
+      {
+        path: 'system/page-rules',
+        name: 'PageRuleCatalog',
+        component: () => import('@/views/system/PageRuleCatalogView.vue'),
+        meta: { title: '规则配置说明' },
+        beforeEnter: (_to, _from, next) => {
+          const authStore = useAuthStore()
+          if (authStore.user?.role !== 'admin') {
+            next({ name: '403' })
+            return
+          }
+          next()
+        },
+      },
     ],
   },
 
